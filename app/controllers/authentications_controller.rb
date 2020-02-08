@@ -10,13 +10,13 @@ class AuthenticationsController < ApplicationController
   def checkUser
     email = params[:email]
     password = params[:password]
-
-    @request_auth = Hash.new
+    @request_auth = {}
     @request_auth[:email] = email
     @request_auth[:password] = password
-    
+
     puts @request_auth
     unless validation(email, password)
+      flash.now[:danger] = 'Email/Passwordを入力してください'
       return render :login
     end
 
@@ -34,6 +34,19 @@ class AuthenticationsController < ApplicationController
   end
 
   def validation(email, password)
-    true # TODO
+    flag = true
+    if email == ''
+
+      flag = false
+    end
+    if password == ''
+      flash.now[:danger] = 'passwordを入力してください'
+      flag = false
+    end
+    flag
   end
+end
+
+class RequestAuth < ApplicationRecord
+  validates :terms_of_service, acceptance: true
 end
