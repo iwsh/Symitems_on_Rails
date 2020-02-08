@@ -1,0 +1,55 @@
+<h1>Calendars#calendar</h1>
+<p>Find me in app/views/calendars/calendar.html.erb</p>
+<% year = @year.to_i
+month = @month.to_i %>
+<table width="100%">
+  <tr><td width="60%" height="350">
+    <table border width="100%" height="300">
+	    <caption><h2><%= year %>/<%= month %></h2></caption>
+      <tr>
+        <th width="14%">Sun</th>
+        <th width="14%">Mon</th>
+        <th width="14%">Tue</th>
+        <th width="14%">Wed</th>
+        <th width="14%">Thu</th>
+        <th width="14%">Fri</th>
+        <th width="14%">Sat</th>
+      </tr>
+  <% require 'date'
+  first_day = Date.new(year,month,1)
+  last_day = Date.new(year,month,-1)
+  if first_day.wday != 0 then
+       for x in 1..first_day.wday do %>
+         <td></td>
+       <% end %>
+  <% end %>
+
+  <% for d in 1..last_day.day do
+       if first_day.wday == 0 then %>
+         </tr>
+         <tr>      
+    <% end %>
+       <td valign="baseline"><%= first_day.day %></td>
+       <% first_day = first_day.next
+     end %>
+
+  <% if first_day.wday != 0 then
+       for x in first_day.wday..6 do %>
+         <td></td>
+    <% end 
+     end %>
+    </table>
+    </td><td width="40%">
+	#schedule detail
+    </td></tr>
+    <tr>
+    <td width="70%">
+	<table width="100%">
+	  <tr>
+	    <td width="33%" align="left"><a href="/calendar/<%= year %>/<%= month -1 %>">前月へ</a></td>
+            <td width="33%" align="center"><a href="/calendar">今月へ</a></td>
+	    <td width="33%" align="right"><a href="/calendar/<%= year %>/<%= month +1 %>">次月へ</a></td>
+	  </tr>
+	</table>
+    </td></tr>
+</table>
