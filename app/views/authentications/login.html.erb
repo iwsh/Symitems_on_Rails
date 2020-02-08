@@ -3,7 +3,7 @@
 
 <%= form_tag({controller: :authentications, action: :checkUser}, {method: :post}) %>
   <%= label_tag :email %>
-  <%= text_field_tag :title, @request_auth[:email], name: "email"%>　<br>
+  <%= email_field_tag :title, @request_auth[:email], name: "email"%>　<br>
   <%= label_tag :password %>
   <%= password_field_tag :title, @request_auth[:password], name: "password"%>　<br>
   <%= submit_tag "ログイン" %>
