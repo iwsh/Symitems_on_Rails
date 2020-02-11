@@ -8,5 +8,6 @@ Rails.application.routes.draw do
   get 'calendars/registerSchedule'
   get 'calendars/deleteConfirm'
   get 'calendar/:year/:month' => 'calendars#calendar'
+  get 'logout' => 'authentications#logout'
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end

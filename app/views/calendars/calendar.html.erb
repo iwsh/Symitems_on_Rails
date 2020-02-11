@@ -1,5 +1,6 @@
 <h1>Calendars#calendar</h1>
 <p>Find me in app/views/calendars/calendar.html.erb</p>
+<%= link_to "logout", "/logout" %>
 <% year = @year.to_i
 month = @month.to_i %>
 <table width="100%">
@@ -15,41 +16,43 @@ month = @month.to_i %>
         <th width="14%">Fri</th>
         <th width="14%">Sat</th>
       </tr>
-  <% require 'date'
-  first_day = Date.new(year,month,1)
-  last_day = Date.new(year,month,-1)
-  if first_day.wday != 0 then
-       for x in 1..first_day.wday do %>
-         <td></td>
-       <% end %>
-  <% end %>
-
-  <% for d in 1..last_day.day do
-       if first_day.wday == 0 then %>
-         </tr>
-         <tr>      
-    <% end %>
-       <td valign="baseline"><%= first_day.day %></td>
-       <% first_day = first_day.next
-     end %>
-
-  <% if first_day.wday != 0 then
-       for x in first_day.wday..6 do %>
-         <td></td>
-    <% end 
-     end %>
+      <% 
+        require 'date'
+        first_day = Date.new(year,month,1)
+        last_day = Date.new(year,month,-1)
+        if first_day.wday != 0 then
+          for x in 1..first_day.wday do 
+      %>
+            <td></td>
+          <% end %>
+        <% end %>
+      <% 
+        for d in 1..last_day.day do
+          if first_day.wday == 0 then
+      %>
+            </tr><tr>      
+          <% end %>
+          <td valign="baseline"><%= first_day.day %></td>
+          <% first_day = first_day.next
+        end %>
+      <% 
+        if first_day.wday != 0 then
+          for x in first_day.wday..6 do %>
+            <td></td>
+          <% end 
+        end %>
     </table>
     </td><td width="40%">
-	#schedule detail
-    </td></tr>
-    <tr>
+      #schedule detail
+    </td>
+  </tr><tr>
     <td width="70%">
-	<table width="100%">
-	  <tr>
-	    <td width="33%" align="left"><a href="/calendar/<%= year %>/<%= month -1 %>">前月へ</a></td>
-            <td width="33%" align="center"><a href="/calendar">今月へ</a></td>
-	    <td width="33%" align="right"><a href="/calendar/<%= year %>/<%= month +1 %>">次月へ</a></td>
-	  </tr>
-	</table>
-    </td></tr>
+    <table width="100%">
+      <tr>
+        <td width="33%" align="left"><%= button_to "前月へ","/calendar/#{@year}/#{@month-1}", {method: :get} %></td>
+        <td width="33%" align="center"><%= button_to "今月へ","/calendar", {method: :get} %></td>
+        <td width="33%" align="right"><%= button_to "次月へ","/calendar/#{@year}/#{@month+1}", {method: :get} %></td>
+      </tr>
+    </table></td>
+  </tr>
 </table>
