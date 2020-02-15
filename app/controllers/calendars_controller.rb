@@ -11,13 +11,15 @@ class CalendarsController < ApplicationController
       end
       if @month >= 13
         @year += 1
-        @month = 1 
+        @month = 1
         redirect_to "/calendar/#{@year}/#{@month}"
       end
     else
       @year = Date.today.year
       @month = Date.today.month
     end
+    #useridとmonthでdateとcontentがほしい
+    #@schedules = AccessSchedulesController.getSchedule
   end
 
   def inputSchedule #GOTO
