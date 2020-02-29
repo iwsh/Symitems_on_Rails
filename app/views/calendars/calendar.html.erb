@@ -18,6 +18,7 @@ month = @month.to_i
         <th width="14%">Fri</th>
         <th width="14%">Sat</th>
       </tr>
+      <tr>
       <% 
         require 'date'
         first_day = Date.new(year,month,1)
@@ -30,11 +31,11 @@ month = @month.to_i
         <% end %>
       <% 
         for d in 1..last_day.day do
-          if first_day.wday == 0 then
+          if first_day.wday == 0 && first_day.day != 1 then
       %>
             </tr><tr>      
           <% end %>
-          <td valign="baseline"><a href="#" id="<%= first_day.day %>" onClick="disp();return false;cont(this);"><%= first_day.day %></a></td>
+          <td valign="baseline"><a href="#" id="<%= first_day.day %>/<%= last_day.day %>" onClick="cont(this);disp();return false;"><%= first_day.day %></a></td>
           <% first_day = first_day.next
         end %>
       <% 
@@ -46,8 +47,8 @@ month = @month.to_i
     </table>
     </td><td width="40%">
       <div id="area1" style="display:none;">
-        <% for x in 1.. %><div id="date" value="1"></div><% do %>
-          Hello World!
+        <% for x in 1..last_day.day do %>
+          <p id="date<%= x %>" style="display:none;"><%= x %></p>
         <% end %>
       </div>
     </td>
@@ -76,16 +77,21 @@ month = @month.to_i
 
 <script language="JavaScript" type="text/javascript">
 <!--
-var elem1_1 = document.getElementById("area1");
-var elem1_2 = document.getElementById("area2");
-var elem1_3 = document.getElementById("date");
+var elem0_1 = document.getElementById("area1");
+var elem0_2 = document.getElementById("area2");
 function disp() {
-  elem1_1.style.display = "";
-  elem1_2.style.display = "";
+  elem0_1.style.display = "";
+  elem0_2.style.display = "";
 }
 function cont(date) {
-  var date_id = date.id; 
-  elem1_3.value = date_id;
+  var d = date.id.split("/");
+  for ( var i = 1 ; i <= d[1] ; i++ ) {
+    if (i == d[0] ) {
+      document.getElementById("date"+i).style.display = "";
+    } else {
+      document.getElementById("date"+i).style.display = "none";
+    }
+  }
 }
 -->
 </script>
