@@ -1,8 +1,8 @@
 Rails.application.routes.draw do
-  get 'access_schedules/getSchedule'
-  get 'access_schedules/updateSchedule'
-  get 'access_schedules/insertSchedule'
-  get 'access_schedules/deleteSchedule'
+  get 'stab_access_schedules/getSchedule'
+  get 'stab_authentications/login'
+  get 'stab_authentications/checkUser'
+  get 'stab_authentications/logout'
   get 'calendar' => 'calendars#calendar'
   get 'calendars/inputSchedule'
   get 'calendars/registerSchedule'
