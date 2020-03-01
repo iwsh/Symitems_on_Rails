@@ -1,5 +1,6 @@
-class AcsessdbsController < ApplicationController
+class AcsessSchedulesController < ApplicationController
   def getSchedule
+    @userId = 2 #TODO:しげから受け取るuserId、数値型で渡される想定
     @displayYear = 2020 #TODO:しげから受け取る表示年、数値型で渡される想定
     @displayMonth = 2 #TODO:しげから受け取る表示月、数値型で渡される想定
 
