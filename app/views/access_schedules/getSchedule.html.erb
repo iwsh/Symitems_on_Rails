@@ -1,2 +1,6 @@
 <h1>AccessSchedules#getSchedule</h1>
 <p>Find me in app/views/access_schedules/getSchedule.html.erb</p>
+<h1><%= @schedule[:title] %></h1>
+<p>開始時刻 ： <%= @schedule[:stardted_at] %></p>
+<p>終了時刻 ： <%= @schedule[:ended_at] %></p>
+<ul>説明 : <%= @schedule[:detail] %></ul>

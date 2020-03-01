@@ -1,10 +1,18 @@
 Rails.application.routes.draw do
-  get 'access_schedules/getSchedule'
-  get 'access_schedules/updateSchedule'
-  get 'access_schedules/insertSchedule'
+
+# 既存スケジュールの表示
+#  get 'schedule/:schedule_id' => 'access_schedules#getSchedule'
+
+# 既存スケジュールの変更、calendars#inputScheduleに含められない場合、作成予定
+#  get 'schedule/:schedule_id/edit' => 'access_schedules#updateSchedule'
+
+# スケジュールの新規登録
+  get 'schedule' => 'calendars#inputSchedule'
+  post 'schedules' => 'calendars#registerSchedule'
+
   get 'access_schedules/deleteSchedule'
   get 'calendar' => 'calendars#calendar'
-  get 'calendars/inputSchedule'
+#  get 'calendars/inputSchedule'
   get 'calendars/registerSchedule'
   get 'calendars/deleteConfirm'
   get 'calendar/:year/:month' => 'calendars#calendar'

@@ -18,10 +18,20 @@ class CalendarsController < ApplicationController
     end
   end
 
-  def inputSchedule #GOTO
+  def inputSchedule
   end
 
-  def registerSchedule #GOTO
+  def registerSchedule
+    if params[:schedule_id].present?
+      @schedule = Schedule.find_by(:schedule_id => params[:schedule_id])
+    else
+      @schedule = Schedule.new
+      @schedule.title = params[:schedule][:title]
+      @schedule.stardted_at = params[:schedule][:stardted_at]
+      @schedule.ended_at = params[:schedule][:ended_at]
+      @schedule.detail = params[:schedule][:detail]
+      redirect_to '/calendar' 
+    end
   end
 
   def deleteConfirm #GOTO
