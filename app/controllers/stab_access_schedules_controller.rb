@@ -1,5 +1,5 @@
 class StabAccessSchedulesController < ApplicationController
-  def getSchedule
+  def getSchedule(userId, year, month)
     
   end
 end

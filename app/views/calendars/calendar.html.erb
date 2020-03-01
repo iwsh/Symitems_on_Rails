@@ -9,15 +9,15 @@ month = @month.to_i
 <table width="100%">
   <tr><td width="60%" height="350">
     <table border width="100%" height="300">
-	    <caption><h2><%= year %>/<%= month %></h2></caption>
+	    <caption><h2><%= link_to "/calendar/#{@year}/#{@month-1}", {method: :get} do %><div style="width:0;height:0;border-top:solid 8px transparent;border-left:solid 8px transparent;border-bottom:solid 8px transparent;border-right:solid 8px #7a0;display:inline-block;_display:inline;"></div><% end %>　<%= year %>/<%= month %>　<%= link_to "/calendar/#{@year}/#{@month+1}", {method: :get} do %><div style="width:0;height:0;border-top:solid 8px transparent;border-right:solid 8px transparent;border-bottom:solid 8px transparent;border-left:solid 8px #7a0;display:inline-block;_display:inline;"></div><% end %></h2></caption>
       <tr>
-        <th width="14%">Sun</th>
+        <th width="14%" style="color:red;">Sun</th>
         <th width="14%">Mon</th>
         <th width="14%">Tue</th>
         <th width="14%">Wed</th>
         <th width="14%">Thu</th>
         <th width="14%">Fri</th>
-        <th width="14%">Sat</th>
+        <th width="14%" style="color:blue;">Sat</th>
       </tr>
       <tr>
       <% 
@@ -46,10 +46,18 @@ month = @month.to_i
           <% end 
         end %>
     </table>
-    </td><td width="40%">
+    </td><td width="40%" valign="baseline">
       <div id="area1" style="display:none;">
         <% for x in 1..last_day.day do %>
-          <p id="date<%= x %>" style="display:none;"><%= x %></p>
+          <div id="date<%= x %>" style="display:none;">
+            <%= year %>/<%= month %>/<%= x %>の予定<br>
+            <p>start   end   title</p>
+            <ul>
+              <li>9:00 ~ 12:00 勉強</li>
+              <li>12:00 ~ 13:00 昼食</li>
+              <li>13:00 ~ 21:00 勉強</li>
+            </ul>
+          </div>
         <% end %>
       </div>
     </td>
@@ -57,18 +65,18 @@ month = @month.to_i
     <td width="70%">
     <table width="100%">
       <tr>
-        <td width="33%" align="left"><%= button_to "前月へ","/calendar/#{@year}/#{@month-1}", {method: :get} %></td>
         <td width="33%" align="center"><%= button_to "今月へ","/calendar", {method: :get} %></td>
-        <td width="33%" align="right"><%= button_to "次月へ","/calendar/#{@year}/#{@month+1}", {method: :get} %></td>
       </tr>
     </table></td>
     <td width="30%">
     <div id="area2" style="display:none;">  
       <table width="100%">
         <tr>
+          <!-- 以下、本来はモーダル表示 -->
           <td width="33%" align="left"><%= button_to "削除","/calendar/#{@year}/#{@month-1}", {method: :get} %></td>
           <td width="33%" align="center"><%= button_to "編集","/calendar", {method: :get} %></td>
           <td width="33%" align="right"><%= button_to "追加","/calendar/#{@year}/#{@month+1}", {method: :get} %></td>
+          <!-- ここまで -->
         </tr>
       </table>
     </div>
