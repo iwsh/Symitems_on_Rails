@@ -1,27 +1,31 @@
 class AcsessSchedulesController < ApplicationController
-  def getSchedule
-    @userId = 2 #TODO:しげから受け取るuserId、数値型で渡される想定
-    @displayYear = 2020 #TODO:しげから受け取る表示年、数値型で渡される想定
-    @displayMonth = 2 #TODO:しげから受け取る表示月、数値型で渡される想定
-
-    @lastDay = Date.new(@displayYear, @displayMonth, -1).strftime
-    @dateFrom = format("#{@displayYear}-%02d-01", @displayMonth)
-    @dateTo = format("#{@displayYear}-%02d-#{@lastDay}", @displayMonth)
+  def getSchedule(userId,displayYear,displayMonth)
+    lastDay = Date.new(displayYear, displayMonth, -1).strftime
+    dateFrom = format("#{displayYear}-%02d-01", displayMonth)
+    dateTo = format("#{displayYear}-%02d-#{lastDay}", displayMonth)
 
     Schedule.joins(:schedule_content)
-    @schedules = Hash.new
-    @schedules = Schedule.where("date BETWEEN ? AND ?", @dateFrom, @dateTo)
+    schedules = Hash.new
+    schedules = Schedule.where("date BETWEEN ? AND ?", dateFrom, dateTo).where(user_id: userId)
+
+    displaySchedules = {}
+    schedules.each{|schedule|
+      day = schedule.date.mday
+      displaySchedules[day] = schedule
+    }
+    return displaySchedules
   end
 
-  def updateSchedule
-    @updateScheduleContent = Hash.new #TODO:ごっちゃんから受け取る
+  # def updateSchedule(updateScheduleContent,updateSchedule) #TODO:本番用コード
+  def updateSchedule #TODO:ごっちゃんから受け取れるようになるまでの暫定対応
+    @updateScheduleContent = Hash.new #TODO:ごっちゃんから受け取れるようになるまでの暫定対応
     @updateScheduleContent[:id] = 5
     @updateScheduleContent[:title] = 'スノーボード'
     @updateScheduleContent[:started_at] = '2020-02-11 12:00:00'
     @updateScheduleContent[:ended_at] = '2020-02-11 14:00:00'
     @updateScheduleContent[:detail] = '滑る'
 
-    @updateSchedule = Hash.new #TODO:ごっちゃんから受け取る
+    @updateSchedule = Hash.new #TODO:ごっちゃんから受け取れるようになるまでの暫定対応
     @updateSchedule[:id] = 5
 
     @scheduleContent = Hash.new
@@ -43,15 +47,16 @@ class AcsessSchedulesController < ApplicationController
     )
   end
 
-  def insertSchedule
-    @insertScheduleContent = Hash.new #TODO:ごっちゃんから受け取る
+  # def insertSchedule(insertScheduleContent,insertSchedule) #TODO:本番用コード
+  def insertSchedule #TODO:ごっちゃんから受け取れるようになるまでの暫定対応
+    @insertScheduleContent = Hash.new #TODO:ごっちゃんから受け取れるようになるまでの暫定対応
     @insertScheduleContent[:id] = 8
     @insertScheduleContent[:title] = '旅行'
     @insertScheduleContent[:started_at] = '2020-02-15 12:00:00'
     @insertScheduleContent[:ended_at] = '2020-02-15 14:00:00'
     @insertScheduleContent[:detail] = 'ウェイ'
 
-    @insertSchedule = Hash.new #TODO:ごっちゃんから受け取る
+    @insertSchedule = Hash.new #TODO:ごっちゃんから受け取れるようになるまでの暫定対応
     @insertSchedule[:date] = '2020-02-15'
     @insertSchedule[:id] = 7
     @insertSchedule[:user_id] = 2
@@ -77,9 +82,10 @@ class AcsessSchedulesController < ApplicationController
     @schedule.save
   end
 
-  def deleteSchedule
-    @deleteScheduleContentId = '8' #TODO:ごっちゃんから受け取る
-    @deleteScheduleId = '7' #TODO:ごっちゃんから受け取る
+  # def deleteSchedule(deleteScheduleContentId,deleteScheduleId) #TODO:本番用コード
+  def deleteSchedule #TODO:ごっちゃんから受け取れるようになるまでの暫定対応
+    @deleteScheduleContentId = '8' #TODO:ごっちゃんから受け取れるようになるまでの暫定対応
+    @deleteScheduleId = '7' #TODO:ごっちゃんから受け取れるようになるまでの暫定対応
 
     @schedule = Schedule.find_by(id: @deleteScheduleId)
     @schedule.delete
