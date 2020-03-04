@@ -53,7 +53,7 @@ month = @month.to_i
             <%= year %>/<%= month %>/<%= x %>の予定<br>
             <% @schedules.each do |day, schedule| %>
               <% if day == x %>
-                <%= schedule[:date] %> <%= schedule[:schedule_content_title] %>
+                <%= schedule.date %> <%= schedule.schedule_content.title %>
               <% end %>
             <% end %>
           </div>

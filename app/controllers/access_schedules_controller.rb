@@ -1,4 +1,4 @@
-class AcsessSchedulesController < ApplicationController
+class AccessSchedulesController < ApplicationController
   def getSchedule(userId,displayYear,displayMonth)
     lastDay = Date.new(displayYear, displayMonth, -1).strftime
     dateFrom = format("#{displayYear}-%02d-01", displayMonth)
