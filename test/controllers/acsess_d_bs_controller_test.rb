@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class AcsessDBsControllerTest < ActionDispatch::IntegrationTest
+class AcsessSchedulesControllerTest < ActionDispatch::IntegrationTest
   test "should get getSchedule" do
     get acsess_d_bs_getSchedule_url
     assert_response :success
