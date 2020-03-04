@@ -51,12 +51,11 @@ month = @month.to_i
         <% for x in 1..last_day.day do %>
           <div id="date<%= x %>" style="display:none;">
             <%= year %>/<%= month %>/<%= x %>の予定<br>
-            <p>start   end   title</p>
-            <ul>
-              <li>9:00 ~ 12:00 勉強</li>
-              <li>12:00 ~ 13:00 昼食</li>
-              <li>13:00 ~ 21:00 勉強</li>
-            </ul>
+            <% @schedules.each do |day, schedule| %>
+              <% if day == x %>
+                <%= schedule[:date] %> <%= schedule[:schedule_content_title] %>
+              <% end %>
+            <% end %>
           </div>
         <% end %>
       </div>
