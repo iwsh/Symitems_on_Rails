@@ -1,20 +1,2 @@
-<h1>スケジュール編集画面</h1>
-<%= form_for @schedule = Schedule.new  do |schedule| %>
-    <p>
-    <%= schedule.label :'タイトル' %>
-    <%= schedule.text_field :title %>  
-    </p>    
-    <p>
-    <%= schedule.label :'開始時刻' %>
-    <%= schedule.datetime_local_field :stardted_at %>    
-    </p>
-    <p>
-    <%= schedule.label :'終了時刻' %>
-    <%= schedule.datetime_local_field :ended_at %>
-    </p>    
-    <p>
-    <%= schedule.label :'説明' %>
-    <%= schedule.text_area :detail %>    
-    </p>    
-    <%= schedule.submit %>
-<% end %>
+<h2>スケジュール追加画面</h2>
+<%= render "form" %>
