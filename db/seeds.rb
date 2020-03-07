@@ -17,8 +17,8 @@
 @schedule = Schedule.new
 @schedule.date = '2020-02-11'
 @schedule.user_id = '2'
-@schedule.content_id = '3'
-@schedule.schedule_content_id = '3'
+@schedule.content_id = '1'
+@schedule.schedule_content_id = '1'
 @schedule.created_at =  DateTime.now
 @schedule.updated_at = DateTime.now
 @schedule.save
