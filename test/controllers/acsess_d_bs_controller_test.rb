@@ -1,23 +1,23 @@
 require 'test_helper'
 
-class AccessSchedulesControllerTest < ActionDispatch::IntegrationTest
+class AcsessSchedulesControllerTest < ActionDispatch::IntegrationTest
   test "should get getSchedule" do
-    get access_schedules_getSchedule_url
+    get acsess_d_bs_getSchedule_url
     assert_response :success
   end
 
   test "should get updateSchedule" do
-    get access_schedules_updateSchedule_url
+    get acsess_d_bs_updateSchedule_url
     assert_response :success
   end
 
   test "should get insertSchedule" do
-    get access_schedules_insertSchedule_url
+    get acsess_d_bs_insertSchedule_url
     assert_response :success
   end
 
   test "should get deleteSchedule" do
-    get access_schedules_deleteSchedule_url
+    get acsess_d_bs_deleteSchedule_url
     assert_response :success
   end
 

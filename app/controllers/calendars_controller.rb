@@ -1,37 +1,41 @@
-class CalendarsController < ApplicationController
+class CalendarsController < AccessSchedulesController
   def calendar
     require 'date'
     if params[:year].present? && params[:year].present?
-	    @year = params[:year].to_i
-	    @month = params[:month].to_i
+      @year = params[:year].to_i
+      @month = params[:month].to_i
       if @month <= 0
         @year -= 1
-	@month = 12
+        @month = 12
+        redirect_to "/calendar/#{@year}/#{@month}"
       end
       if @month >= 13
-	@year += 1
-	@month = 1
+        @year += 1
+        @month = 1
+        redirect_to "/calendar/#{@year}/#{@month}"
       end
     else
       @year = Date.today.year
       @month = Date.today.month
     end
+    @userId = 2
+    @schedules = AccessSchedulesController.new.getSchedule(@userId,@year,@month)
   end
 
   def inputSchedule
-    @schedule = Schedule.new 
+    @schedule_content = ScheduleContent.new 
   end
 
   def registerSchedule
     if params[:id].present?
-      @schedule = Schedule.find_by(:id => params[:id])
+      @schedule_content = ScheduleContent.find_by(:id => params[:id])
     else
-      @schedule = Schedule.new
-      @schedule.title = params[:schedule][:title]
-      @schedule.stardted_at = params[:schedule][:stardted_at]
-      @schedule.ended_at = params[:schedule][:ended_at]
-      @schedule.detail = params[:schedule][:detail]
-      @schedule.save
+      @schedule_content = ScheduleContent.new
+      @schedule_content.title = params[:schedule_content][:title]
+      @schedule_content.started_at = params[:schedule_content][:started_at]
+      @schedule_content.ended_at = params[:schedule_content][:ended_at]
+      @schedule_content.detail = params[:schedule_content][:detail]
+      @schedule_content.save
       redirect_to '/calendar' 
     end
   end
@@ -39,24 +43,24 @@ class CalendarsController < ApplicationController
   def edit
 # test
     if params[:schedule_id].to_i == 1
-      @schedule = Schedule.new
-      @schedule.title = 'タイトル!'
-      @schedule.stardted_at = '2020/02/09 20:00:00'
-      @schedule.ended_at = '2020/02/09 21:00:00'
-      @schedule.detail = 'ガストでお勉強する'
+      @schedule_content = ScheduleContent.new
+      @schedule_content.title = 'タイトル!'
+      @schedule_content.stardted_at = '2020/02/09 20:00:00'
+      @schedule_content.ended_at = '2020/02/09 21:00:00'
+      @schedule_content.detail = 'ガストでお勉強する'
     elsif params[:schedule_id].to_i == 2
-      @schedule = Schedule.new
-      @schedule.title = 'タイトル2'
-      @schedule.stardted_at = '2020/02/09 20:00:00'
-      @schedule.ended_at = '2020/02/09 21:00:00'
-      @schedule.detail = '家でお勉強する'
+      @schedule_content = ScheduleContent.new
+      @schedule_content.title = 'タイトル2'
+      @schedule_content.stardted_at = '2020/02/09 20:00:00'
+      @schedule_content.ended_at = '2020/02/09 21:00:00'
+      @schedule_content.detail = '家でお勉強する'
     end
-#    @schedule = Schedule.find(params[:id])
+#    @schedule_content = ScheduleContent.find(params[:id])
   end
 
   def update
-    @schedule = Schedule.find(params[:id])
-    @schedule.update(params.require(:schedule).permit(:title, :stardted_at, :ended_at, :detail))
+    @schedule_content = ScheduleContent.find(params[:id])
+    @schedule_content.update(params.require(:schedule_content).permit(:title, :stardted_at, :ended_at, :detail))
     redirect_to '/calendar'
   end
 
