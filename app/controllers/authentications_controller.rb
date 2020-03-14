@@ -5,6 +5,7 @@ class AuthenticationsController < ApplicationController
   end
 
   def logout
+    session[:user] = nil
   end
 
   def checkUser
@@ -14,24 +15,24 @@ class AuthenticationsController < ApplicationController
     @request_auth[:email] = email
     @request_auth[:password] = password
 
-    puts @request_auth
     unless validation(email, password)
       flash.now[:danger] = 'Email/Passwordを入力してください'
       return render :login
     end
-
+    
     user = User.find_by(email: email)
+    puts user
 
-    # # test
-    # user = User.new
-    # user.password = password
-    if true
-      redirect_to '/stab/calender'
-    # if user
-      # user.password == password ? (redirect_to '/stab/calender') : (render :login)
-      # user.password == password ? (redirect_to '/calender') : (render :login)
+    if user
+      if user.password == password
+        session[:user] = user
+        redirect_to '/calendar'
+      else
+        flash.now[:danger] = 'パスワードが違います'
+        render :login
+      end
     else
-      # TODO:エラー表示
+      flash.now[:danger] = 'ユーザが存在しません'
       render :login
     end
   end
