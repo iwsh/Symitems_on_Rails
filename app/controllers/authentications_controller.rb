@@ -25,10 +25,13 @@ class AuthenticationsController < ApplicationController
     # # test
     # user = User.new
     # user.password = password
-    if user
-      user.password == password ? (redirect_to '/stab/calender') : (render :login)
+    if true
+      redirect_to '/stab/calender'
+    # if user
+      # user.password == password ? (redirect_to '/stab/calender') : (render :login)
       # user.password == password ? (redirect_to '/calender') : (render :login)
     else
+      # TODO:エラー表示
       render :login
     end
   end
@@ -36,11 +39,10 @@ class AuthenticationsController < ApplicationController
   def validation(email, password)
     flag = true
     if email == ''
-
       flag = false
     end
     if password == ''
-      flash.now[:danger] = 'passwordを入力してください'
+      # flash.now[:danger] = 'passwordを入力してください'
       flag = false
     end
     flag
