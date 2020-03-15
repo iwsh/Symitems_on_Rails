@@ -16,7 +16,7 @@ class AccessSchedulesController < ApplicationController
     return displaySchedules
   end
 
-  # def updateSchedule(updateScheduleContent,updateSchedule) #TODO:本番用コード
+  # def updateSchedule(updateSchedule) #TODO:本番用コード
   def updateSchedule #TODO:ごっちゃんから受け取れるようになるまでの暫定対応
     @updateScheduleContent = Hash.new #TODO:ごっちゃんから受け取れるようになるまでの暫定対応
     @updateScheduleContent[:id] = 5
@@ -47,19 +47,19 @@ class AccessSchedulesController < ApplicationController
     )
   end
 
-  # def insertSchedule(insertScheduleContent,insertSchedule) #TODO:本番用コード
-  def insertSchedule #TODO:ごっちゃんから受け取れるようになるまでの暫定対応
+  # def insertSchedule(insertSchedule) #TODO:本番用コード
+  def insertSchedule(schedule) #TODO:ごっちゃんから受け取れるようになるまでの暫定対応
     @insertScheduleContent = Hash.new #TODO:ごっちゃんから受け取れるようになるまでの暫定対応
-    @insertScheduleContent[:id] = 8
+    # @insertScheduleContent[:id] = 8
     @insertScheduleContent[:title] = '旅行'
-    @insertScheduleContent[:started_at] = '2020-02-15 12:00:00'
-    @insertScheduleContent[:ended_at] = '2020-02-15 14:00:00'
+    @insertScheduleContent[:started_at] = '2020-02-15 12:00:00' #TODO:テーブル定義の変更に伴って改修予定
+    @insertScheduleContent[:ended_at] = '2020-02-15 14:00:00' #TODO:テーブル定義の変更に伴って改修予定
     @insertScheduleContent[:detail] = 'ウェイ'
 
     @insertSchedule = Hash.new #TODO:ごっちゃんから受け取れるようになるまでの暫定対応
     @insertSchedule[:date] = '2020-02-15'
-    @insertSchedule[:id] = 7
-    @insertSchedule[:user_id] = 2
+    # @insertSchedule[:id] = 7
+    @insertSchedule[:user_id] = 2 #session対応完了までの暫定対応
 
     @scheduleContent = ScheduleContent.create(
       title: @insertScheduleContent[:title],
@@ -82,15 +82,25 @@ class AccessSchedulesController < ApplicationController
     @schedule.save
   end
 
-  # def deleteSchedule(deleteScheduleContentId,deleteScheduleId) #TODO:本番用コード
-  def deleteSchedule #TODO:ごっちゃんから受け取れるようになるまでの暫定対応
-    @deleteScheduleContentId = '8' #TODO:ごっちゃんから受け取れるようになるまでの暫定対応
-    @deleteScheduleId = '7' #TODO:ごっちゃんから受け取れるようになるまでの暫定対応
+  def deleteSchedule(selectedDeleteScheduleId, isDeleteAll = 1)
+    userId = '2' #TODO:session対応完了までの暫定対応
+    # userId = session[:user] #TODO:本番用コード
 
-    @schedule = Schedule.find_by(id: @deleteScheduleId)
-    @schedule.delete
+    Schedule.joins(:schedule_content)
+    selectedDeleteSchedule = Hash.new
+    selectedDeleteSchedule = Schedule.where(id: selectedDeleteScheduleId).where(user_id: userId)
+    deleteScheduleContentId = selectedDeleteSchedule.schedule_content.id
 
-    @scheduleContent = ScheduleContent.find_by(id: @deleteScheduleContentId)
+    if isDeleteAll == 1
+      Schedule.joins(:schedule_content)
+      @schedule = Schedule.where(schedule_content.id: deleteScheduleContentId)
+      @schedule.delete_all
+    else
+      @schedule = Schedule.find_by(id: deleteScheduleId)
+      @schedule.delete
+    end
+
+    @scheduleContent = ScheduleContent.find_by(id: deleteScheduleContentId)
     @scheduleContent.delete
   end
 end
