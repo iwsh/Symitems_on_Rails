@@ -16,33 +16,32 @@ class AccessSchedulesController < ApplicationController
     return displaySchedules
   end
 
-  # def updateSchedule(updateSchedule) #TODO:本番用コード
-  def updateSchedule #TODO:ごっちゃんから受け取れるようになるまでの暫定対応
-    @updateScheduleContent = Hash.new #TODO:ごっちゃんから受け取れるようになるまでの暫定対応
-    @updateScheduleContent[:id] = 5
-    @updateScheduleContent[:title] = 'スノーボード'
-    @updateScheduleContent[:started_at] = '2020-02-11 12:00:00'
-    @updateScheduleContent[:ended_at] = '2020-02-11 14:00:00'
-    @updateScheduleContent[:detail] = '滑る'
+  def updateSchedule(updateSchedule)
+    userId = 2 #session対応完了までの暫定対応
+    # userId = session[:user] #TODO:本番用コード
 
-    @updateSchedule = Hash.new #TODO:ごっちゃんから受け取れるようになるまでの暫定対応
-    @updateSchedule[:id] = 5
+    Schedule.joins(:schedule_content) #TODO:deleteScheduleでも使っているので、getScheduleContentIdメソッドを作りたい。
+    updateSchedule = Hash.new
+    updateSchedule = Schedule.where(id: updateSchedule[:id]).where(user_id: userId)
+    updateScheduleContentId = updateSchedule.schedule_content.id
 
+    # transaction張りたい
     @scheduleContent = Hash.new
-    @scheduleContent = ScheduleContent.find_by(id: @updateScheduleContent[:id])
+    @scheduleContent = ScheduleContent.find_by(id: updateScheduleContentId)
     @scheduleContent.update(
-      title: @updateScheduleContent[:title],
-      started_at: @updateScheduleContent[:started_at],
-      ended_at: @updateScheduleContent[:ended_at],
-      detail: @updateScheduleContent[:detail],
+      title: updateSchedule[:title],
+      started_at: updateSchedule[:started_at],
+      ended_at: updateSchedule[:ended_at],
+      detail: updateSchedule[:detail],
       updated_at: DateTime.now
     )
 
     @schedule = Hash.new
-    @schedule = Schedule.find_by(id: @updateSchedule[:id])
+    @schedule = Schedule.find_by(id: updateSchedule[:id])
     @schedule.update(
-      content_id: @updateScheduleContent[:id],
-      schedule_content_id: @updateScheduleContent[:id],
+      # date: updateSchedule[:date], #日付も更新する仕様の場合。ごっちゃんから受け取らない場合は、本メソッドでinsertSchedule[:started_at]から取得
+      content_id: updateScheduleContentId,
+      schedule_content_id: updateScheduleContentId,
       updated_at: DateTime.now
     )
   end
@@ -79,7 +78,7 @@ class AccessSchedulesController < ApplicationController
     userId = '2' #TODO:session対応完了までの暫定対応
     # userId = session[:user] #TODO:本番用コード
 
-    Schedule.joins(:schedule_content)
+    Schedule.joins(:schedule_content) #TODO:updateScheduleでも使っているので、getScheduleContentIdメソッドを作りたい。
     selectedDeleteSchedule = Hash.new
     selectedDeleteSchedule = Schedule.where(id: selectedDeleteScheduleId).where(user_id: userId)
     deleteScheduleContentId = selectedDeleteSchedule.schedule_content.id
