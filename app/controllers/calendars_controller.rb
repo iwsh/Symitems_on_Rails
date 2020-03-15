@@ -20,43 +20,28 @@ class CalendarsController < AccessSchedulesController
     end
     @userId = 2
     @schedules = AccessSchedulesController.new.getSchedule(@userId,@year,@month)
+    # use session later
+    session[:schedule] = @schedules[15].schedule_content
   end
 
   def inputSchedule
-    @schedule_content = ScheduleContent.new 
+    @insertSchedule = ScheduleContent.new
   end
 
   def registerSchedule
-    if params[:id].present?
-      @schedule_content = ScheduleContent.find_by(:id => params[:id])
-    else
-      @schedule_content = ScheduleContent.new
-      @schedule_content.title = params[:schedule_content][:title]
-      @schedule_content.started_at = params[:schedule_content][:started_at]
-      @schedule_content.ended_at = params[:schedule_content][:ended_at]
-      @schedule_content.detail = params[:schedule_content][:detail]
-      @schedule_content.save
-      redirect_to '/calendar' 
-    end
+    @insertSchedule = Hash.new
+    @insertSchedule[:date] = params[:started_at].to_date
+    @insertSchedule[:title] = params[:title]
+    @insertSchedule[:started_at] = params[:started_at]
+    @insertSchedule[:ended_at] = params[:ended_at]
+    @insertSchedule[:detail] = params[:detail]
+    AccessSchedulesController.new.insertSchedule(@insertSchedule)
   end
 
   def edit
-# test
-    if params[:schedule_id].to_i == 1
-      @schedule_content = ScheduleContent.new
-      @schedule_content.title = 'タイトル!'
-      @schedule_content.stardted_at = '2020/02/09 20:00:00'
-      @schedule_content.ended_at = '2020/02/09 21:00:00'
-      @schedule_content.detail = 'ガストでお勉強する'
-    elsif params[:schedule_id].to_i == 2
-      @schedule_content = ScheduleContent.new
-      @schedule_content.title = 'タイトル2'
-      @schedule_content.stardted_at = '2020/02/09 20:00:00'
-      @schedule_content.ended_at = '2020/02/09 21:00:00'
-      @schedule_content.detail = '家でお勉強する'
-    end
-#    @schedule_content = ScheduleContent.find(params[:id])
+    @schedules = AccessSchedulesController.new.getSchedule(@userId,@year,@month)
   end
+
 
   def update
     @schedule_content = ScheduleContent.find(params[:id])
@@ -65,6 +50,9 @@ class CalendarsController < AccessSchedulesController
   end
 
 
-  def deleteConfirm #GOTO
+  def deleteConfirm
+    #@schedule_content = AccessSchedulesController.new.deleteSchedule(1)
+    #@schedule_content_id = params[:schedule_content_id]
+    #AccessSchedulesController.new.deleteSchedule(@schedule_content_id)
   end
 end

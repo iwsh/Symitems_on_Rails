@@ -1,2 +1,19 @@
 <h2>スケジュール追加画面</h2>
-<%= render "form" %>
+<%= form_tag({controller: :calendars, action: :registerSchedule}, {method: :post}) %>
+    <p>
+    <%= label_tag :'タイトル' %>
+    <%= text_field_tag :title, @insertSchedule[:title], name: "title" %>
+    </p>
+    <p>
+    <%= label_tag :'開始時刻' %>
+    <%= datetime_field_tag :started_at, @insertSchedule[:started_at], name: "started_at" %>
+    </p>
+    <p>
+    <%= label_tag :'終了時刻' %>
+    <%= datetime_field_tag :ended_at, @insertSchedule[:ended_at], name: "ended_at" %>
+    </p>
+    <p>
+    <%= label_tag :'説明' %>
+    <%= text_field_tag :detail, @insertSchedule[:detail], name: "detail" %>
+    </p>
+    <%= submit_tag "作成" %>

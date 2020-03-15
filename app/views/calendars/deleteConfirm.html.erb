@@ -1,2 +1,6 @@
-<h1>Calendars#deleteConfirm</h1>
-<p>Find me in app/views/calendars/deleteConfirm.html.erb</p>
+<div>削除しますか？</div>
+<p>タイトル: <%=session[:schedule]["title"]%></p>
+<p>詳細: <%=session[:schedule]["detail"]%></p>
+<h2>
+<%= link_to "削除" , {controller: :calendars, action: :deleteConfirm},method: :post %>
+</h2>

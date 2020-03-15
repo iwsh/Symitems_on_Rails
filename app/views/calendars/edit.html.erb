@@ -1,2 +1,23 @@
 <h2>スケジュール編集画面</h2>
-<%= render "form" %>
+<%= form_tag({controller: :calendars, action: :edit}, {method: :get}) %>
+    <p>
+    <%= label_tag :'日付' %>
+    <%= date_field_tag :title, @schedule_content[:date], name: "date" %>
+    </p>
+    <p>
+    <%= label_tag :'タイトル' %>
+    <%= text_field_tag :title, @schedule_content[:title], name: "title" %>
+    </p>
+    <p>
+    <%= label_tag :'開始時刻' %>
+    <%= time_field_tag :started_at, @schedule_content[:started_at], name: "started_at" %>
+    </p>
+    <p>
+    <%= label_tag :'終了時刻' %>
+    <%= time_field_tag :started_at, @schedule_content[:ended_at], name: "ended_at" %>
+    </p>
+    <p>
+    <%= label_tag :'説明' %>
+    <%= text_field_tag :detail, @schedule_content[:detail], name: "detail" %>
+    </p>
+    <%= submit_tag "更新" %>
