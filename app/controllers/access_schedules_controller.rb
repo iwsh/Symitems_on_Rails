@@ -47,35 +47,28 @@ class AccessSchedulesController < ApplicationController
     )
   end
 
-  # def insertSchedule(insertSchedule) #TODO:本番用コード
-  def insertSchedule(schedule) #TODO:ごっちゃんから受け取れるようになるまでの暫定対応
-    @insertScheduleContent = Hash.new #TODO:ごっちゃんから受け取れるようになるまでの暫定対応
-    # @insertScheduleContent[:id] = 8
-    @insertScheduleContent[:title] = '旅行'
-    @insertScheduleContent[:started_at] = '2020-02-15 12:00:00' #TODO:テーブル定義の変更に伴って改修予定
-    @insertScheduleContent[:ended_at] = '2020-02-15 14:00:00' #TODO:テーブル定義の変更に伴って改修予定
-    @insertScheduleContent[:detail] = 'ウェイ'
+  def insertSchedule(insertSchedule)
+    userId = 2 #session対応完了までの暫定対応
+    # userId = session[:user] #TODO:本番用コード
 
-    @insertSchedule = Hash.new #TODO:ごっちゃんから受け取れるようになるまでの暫定対応
-    @insertSchedule[:date] = '2020-02-15'
-    # @insertSchedule[:id] = 7
-    @insertSchedule[:user_id] = 2 #session対応完了までの暫定対応
-
+    # transaction張りたい
     @scheduleContent = ScheduleContent.create(
-      title: @insertScheduleContent[:title],
-      started_at: @insertScheduleContent[:started_at],
-      ended_at: @insertScheduleContent[:ended_at],
-      detail: @insertScheduleContent[:detail],
+      title: insertSchedule[:title],
+      started_at: insertSchedule[:started_at],
+      ended_at: insertSchedule[:ended_at],
+      detail: insertSchedule[:detail],
       created_at: DateTime.now,
       updated_at: DateTime.now
     )
     @scheduleContent.save
 
+    incertedScheduleContent = ScheduleContent.last
+
     @schedule = Schedule.create(
-      date: @insertSchedule[:date],
-      user_id: @insertSchedule[:user_id],
-      content_id: @insertScheduleContent[:id],
-      schedule_content_id: @insertScheduleContent[:id],
+      date: insertSchedule[:date], #ごっちゃんから受け取らない場合は、本メソッドでinsertSchedule[:started_at]から取得
+      user_id: userId,
+      content_id: incertedScheduleContent.id,
+      schedule_content_id: incertedScheduleContent.id,
       created_at: DateTime.now,
       updated_at: DateTime.now
     )
