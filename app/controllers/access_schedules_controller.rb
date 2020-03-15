@@ -1,6 +1,6 @@
 class AccessSchedulesController < ApplicationController
   def getSchedule(userId,displayYear,displayMonth)
-    lastDay = Date.new(displayYear, displayMonth, -1).strftime
+    lastDay = Date.new(displayYear, displayMonth, -1).day
     dateFrom = format("#{displayYear}-%02d-01", displayMonth)
     dateTo = format("#{displayYear}-%02d-#{lastDay}", displayMonth)
 

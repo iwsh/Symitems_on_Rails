@@ -8,17 +8,17 @@ year = @year.to_i
 month = @month.to_i 
 %>
 <table width="100%">
-  <tr><td width="60%" height="350">
-    <table border width="100%" height="300">
+  <tr><td width="60%" height="420">
+    <table border width="100%" height="370">
 	    <caption><h2><%= link_to "/calendar/#{@year}/#{@month-1}", {method: :get} do %><div style="width:0;height:0;border-top:solid 8px transparent;border-left:solid 8px transparent;border-bottom:solid 8px transparent;border-right:solid 8px #7a0;display:inline-block;_display:inline;"></div><% end %>　<%= year %>/<%= month %>　<%= link_to "/calendar/#{@year}/#{@month+1}", {method: :get} do %><div style="width:0;height:0;border-top:solid 8px transparent;border-right:solid 8px transparent;border-bottom:solid 8px transparent;border-left:solid 8px #7a0;display:inline-block;_display:inline;"></div><% end %></h2></caption>
       <tr>
-        <th width="14%" style="color:red;">Sun</th>
-        <th width="14%">Mon</th>
-        <th width="14%">Tue</th>
-        <th width="14%">Wed</th>
-        <th width="14%">Thu</th>
-        <th width="14%">Fri</th>
-        <th width="14%" style="color:blue;">Sat</th>
+        <th width="14%" height="35" style="color:red;">Sun</th>
+        <th width="14%" height="35" >Mon</th>
+        <th width="14%" height="35" >Tue</th>
+        <th width="14%" height="35" >Wed</th>
+        <th width="14%" height="35" >Thu</th>
+        <th width="14%" height="35" >Fri</th>
+        <th width="14%" height="35" style="color:blue;">Sat</th>
       </tr>
       <tr>
       <% 
@@ -28,7 +28,7 @@ month = @month.to_i
         if first_day.wday != 0 then
           for x in 1..first_day.wday do 
       %>
-            <td></td>
+            <td height="60"></td>
           <% end %>
         <% end %>
       <% 
@@ -37,13 +37,24 @@ month = @month.to_i
       %>
             </tr><tr>      
           <% end %>
-          <td valign="baseline"><a href="#" id="<%= first_day.day %>/<%= last_day.day %>" onClick="cont(this);disp();return false;"><%= first_day.day %></a></td>
+          <td height="60" valign="baseline">
+            <a href="#" id="<%= first_day.day %>/<%= last_day.day %>" onClick="cont(this);disp();return false;"><%= first_day.day %></a><br>
+            <% cnt = 0 %>
+            <% @schedules.each do |day, schedule| %>
+              <% if day == first_day.day %>
+                <% cnt += 1 %>
+              <% end %>
+            <% end %>
+            <% if cnt > 0 %>
+              <span>予定：<%= cnt %>件</span>
+            <% end %>
+          </td>
           <% first_day = first_day.next
         end %>
       <% 
         if first_day.wday != 0 then
           for x in first_day.wday..6 do %>
-            <td></td>
+            <td height="60"></td>
           <% end 
         end %>
     </table>
@@ -51,10 +62,11 @@ month = @month.to_i
       <div id="area1" style="display:none;">
         <% for x in 1..last_day.day do %>
           <div id="date<%= x %>" style="display:none;">
-            <%= year %>/<%= month %>/<%= x %>の予定<br>
+            <h3><%= year %>/<%= month %>/<%= x %>の予定</h3>
             <% @schedules.each do |day, schedule| %>
               <% if day == x %>
-                <%= schedule.date %> <%= schedule.schedule_content.title %>
+                <%= (schedule.schedule_content.started_at).strftime("%H:%M:%S") %> ~ <%= (schedule.schedule_content.ended_at).strftime("%H:%M:%S") %>：<%= schedule.schedule_content.title %><br>
+                <%= schedule.schedule_content.detail %>
               <% end %>
             <% end %>
           </div>
@@ -62,13 +74,13 @@ month = @month.to_i
       </div>
     </td>
   </tr><tr>
-    <td width="70%">
+    <td width="60%">
     <table width="100%">
       <tr>
         <td width="33%" align="center"><%= button_to "今月へ","/calendar", {method: :get} %></td>
       </tr>
     </table></td>
-    <td width="30%">
+    <td width="40%">
     <div id="area2" style="display:none;">  
       <table width="100%">
         <tr>
