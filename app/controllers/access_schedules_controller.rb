@@ -62,13 +62,13 @@ class AccessSchedulesController < ApplicationController
     )
     @scheduleContent.save
 
-    incertedScheduleContent = ScheduleContent.last
+    insertedScheduleContent = ScheduleContent.last
 
     @schedule = Schedule.create(
       date: insertSchedule[:date], #ごっちゃんから受け取らない場合は、本メソッドでinsertSchedule[:started_at]から取得
       user_id: userId,
-      content_id: incertedScheduleContent.id,
-      schedule_content_id: incertedScheduleContent.id,
+      content_id: insertedScheduleContent.id,
+      schedule_content_id: insertedScheduleContent.id,
       created_at: DateTime.now,
       updated_at: DateTime.now
     )
