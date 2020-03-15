@@ -47,6 +47,10 @@ class AccessSchedulesController < ApplicationController
     )
   end
 
+  # 実行が日付の変更を含むかどうか
+
+  # 
+
   # def insertSchedule(insertScheduleContent,insertSchedule) #TODO:本番用コード
   def insertSchedule #TODO:ごっちゃんから受け取れるようになるまでの暫定対応
     @insertScheduleContent = Hash.new #TODO:ごっちゃんから受け取れるようになるまでの暫定対応
