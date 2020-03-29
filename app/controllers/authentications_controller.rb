@@ -19,7 +19,7 @@ class AuthenticationsController < ApplicationController
       flash.now[:danger] = 'Email/Passwordを入力してください'
       return render :login
     end
-    
+
     user = User.find_by(email: email)
     puts user
 
@@ -28,11 +28,11 @@ class AuthenticationsController < ApplicationController
         session[:user] = user
         redirect_to '/calendar'
       else
-        flash.now[:danger] = 'パスワードが違います'
+        flash.now[:danger] = 'Email または Password が違います'
         render :login
       end
     else
-      flash.now[:danger] = 'ユーザが存在しません'
+      flash.now[:danger] = 'Email または Password が違います'
       render :login
     end
   end
