@@ -21,7 +21,7 @@ class CalendarsController < AccessSchedulesController
     @userId = 2
     @schedules = AccessSchedulesController.new.getSchedule(@userId,@year,@month)
     # use session later
-    session[:schedule] = @schedules[15].schedule_content
+    # session[:schedule] = @schedules[15].schedule_content
   end
 
   def inputSchedule
