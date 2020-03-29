@@ -75,7 +75,7 @@ month = @month.to_i
       <table width="100%">
         <tr>
           <!-- 以下、本来はモーダル表示 -->
-          <td width="33%" align="right"><%= button_to "追加","/calendar/#{@year}/#{@month+1}", {method: :get} %></td>
+          <td width="33%" align="right"><%= button_to "追加","/schedule", {method: :get} %></td>
           <!-- ここまで -->
         </tr>
       </table>
