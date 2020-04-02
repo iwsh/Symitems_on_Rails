@@ -11,7 +11,7 @@
 # 注意：以下のデータはupdate、deleteをしないこと。
 
 # 以下データ消去、確認用SQL
-# delete from user;
+# delete from users;
 # delete from Schedule_contents;
 # delete from Schedules;
 # select * from users;
@@ -61,8 +61,8 @@ ScheduleContent.create!(
     },
     {
       title: '休日出勤に気が付く',
-      started_at: '2020-04-26 18:00:00',
-      ended_at: '2020-04-26 23:00:00',
+      started_at: '2020-05-31 18:00:00',
+      ended_at: '2020-05-31 23:00:00',
       detail: '小黒またも休日出勤',
       created_at: DateTime.now,
       updated_at: DateTime.now,
@@ -91,8 +91,8 @@ yamaguro = User.find_by(email: 'chirichirige@gmail.com')
 
 scheduleContentIdWork        = ScheduleContent.find_by(detail: '小黒まず働く')
 scheduleContentReWork        = ScheduleContent.find_by(detail: '小黒再び働く')
-scheduleContentMissReturn    = ScheduleContent.find_by(detail: '小黒も山黒もバスをとり間違える')
 scheduleContentReHolidayWork = ScheduleContent.find_by(detail: '小黒またも休日出勤')
+scheduleContentMissReturn    = ScheduleContent.find_by(detail: '小黒も山黒もバスをとり間違える')
 scheduleContentPoaching      = ScheduleContent.find_by(detail: '山黒カニをたくさんとる')
 
 # 予定。6つ
@@ -109,8 +109,8 @@ Schedule.create!(
     { # 小黒の予定。同一ユーザー同一日の複数詳細のテスト。
       date: '2020-04-26',
       user_id: oguro.id,
-      content_id: scheduleContentMissReturn.id,
-      schedule_content_id: scheduleContentMissReturn.id,
+      content_id: scheduleContentReWork.id,
+      schedule_content_id: scheduleContentReWork.id,
       created_at: DateTime.now,
       updated_at: DateTime.now,
     },
