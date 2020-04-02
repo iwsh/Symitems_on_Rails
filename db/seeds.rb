@@ -5,20 +5,146 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
-@scheduleContent = ScheduleContent.new
-@scheduleContent.title = 'スノボ'
-@scheduleContent.started_at = '2020-02-11 12:00:00'
-@scheduleContent.ended_at = '2020-02-11 14:00:00'
-@scheduleContent.detail = '滑る'
-@scheduleContent.created_at =  DateTime.now
-@scheduleContent.updated_at = DateTime.now
-@scheduleContent.save
 
-@schedule = Schedule.new
-@schedule.date = '2020-02-11'
-@schedule.user_id = '2'
-@schedule.content_id = '1'
-@schedule.schedule_content_id = '1'
-@schedule.created_at =  DateTime.now
-@schedule.updated_at = DateTime.now
-@schedule.save
+# テストデータの作成。Symitems_on_Railsディレクトリ配下でコマンドrake db:seedを実行する。
+# 注意：以下のデータと共通のdetailをinsertしないこと。
+# 注意：以下のデータはupdate、deleteをしないこと。
+
+# 以下データ消去、確認用SQL
+# delete from user;
+# delete from Schedule_contents;
+# delete from Schedules;
+# select * from users;
+# select * from Schedule_contents;
+# select * from Schedules;
+
+# テストユーザー。2人
+User.create!(
+  [
+    {
+      name: '小黒 隼人',
+      password: 'gerounnko',
+      email: 'gerounnko@gmail.com',
+      last_login_at: DateTime.now,
+      created_at: DateTime.now,
+      updated_at: DateTime.now,
+    },
+    {
+      name: '山黒 集太',
+      password: 'chirichirige',
+      email: 'chirichirige@gmail.com',
+      last_login_at: DateTime.now,
+      created_at: DateTime.now,
+      updated_at: DateTime.now,
+    },
+  ]
+)
+
+# 予定の詳細。5つ
+ScheduleContent.create!(
+  [
+    {
+      title: '仕事',
+      started_at: '2020-04-26 06:00:00',
+      ended_at: '2020-04-26 18:00:00',
+      detail: '小黒まず働く',
+      created_at: DateTime.now,
+      updated_at: DateTime.now,
+    },
+    {
+      title: '残業',
+      started_at: '2020-04-26 18:00:00',
+      ended_at: '2020-04-26 23:00:00',
+      detail: '小黒再び働く',
+      created_at: DateTime.now,
+      updated_at: DateTime.now,
+    },
+    {
+      title: '休日出勤に気が付く',
+      started_at: '2020-04-26 18:00:00',
+      ended_at: '2020-04-26 23:00:00',
+      detail: '小黒またも休日出勤',
+      created_at: DateTime.now,
+      updated_at: DateTime.now,
+    },
+    {
+      title: '帰省失敗',
+      started_at: '2020-05-24 10:00:00',
+      ended_at: '2020-05-24 10:30:00',
+      detail: '小黒も山黒もバスをとり間違える',
+      created_at: DateTime.now,
+      updated_at: DateTime.now,
+    },
+    {
+      title: '密漁',
+      started_at: '2020-05-31 12:00:00',
+      ended_at: '2020-05-31 18:00:00',
+      detail: '山黒カニをたくさんとる',
+      created_at: DateTime.now,
+      updated_at: DateTime.now,
+    },
+  ]
+)
+
+oguro    = User.find_by(email: 'gerounnko@gmail.com')
+yamaguro = User.find_by(email: 'chirichirige@gmail.com')
+
+scheduleContentIdWork        = ScheduleContent.find_by(detail: '小黒まず働く')
+scheduleContentReWork        = ScheduleContent.find_by(detail: '小黒再び働く')
+scheduleContentMissReturn    = ScheduleContent.find_by(detail: '小黒も山黒もバスをとり間違える')
+scheduleContentReHolidayWork = ScheduleContent.find_by(detail: '小黒またも休日出勤')
+scheduleContentPoaching      = ScheduleContent.find_by(detail: '山黒カニをたくさんとる')
+
+# 予定。6つ
+Schedule.create!(
+  [
+    { # 小黒の予定。同一ユーザー同一日の複数詳細のテスト。
+      date: '2020-04-26',
+      user_id: oguro.id,
+      content_id: scheduleContentPoaching.id,
+      schedule_content_id: scheduleContentPoaching.id,
+      created_at: DateTime.now,
+      updated_at: DateTime.now,
+    },
+    { # 小黒の予定。同一ユーザー同一日の複数詳細のテスト。
+      date: '2020-04-26',
+      user_id: oguro.id,
+      content_id: scheduleContentMissReturn.id,
+      schedule_content_id: scheduleContentMissReturn.id,
+      created_at: DateTime.now,
+      updated_at: DateTime.now,
+    },
+    { # 小黒の予定。別ユーザーとの日程重複のテスト。
+      date: '2020-05-31',
+      user_id: oguro.id,
+      content_id: scheduleContentReHolidayWork.id,
+      schedule_content_id: scheduleContentReHolidayWork.id,
+      created_at: DateTime.now,
+      updated_at: DateTime.now,
+    },
+    { # 小黒の予定。別ユーザーとの詳細共有のテスト。
+      date: '2020-05-24',
+      user_id: oguro.id,
+      content_id: scheduleContentMissReturn.id,
+      schedule_content_id: scheduleContentMissReturn.id,
+      created_at: DateTime.now,
+      updated_at: DateTime.now,
+    },
+    { # 山黒の予定。別ユーザーとの詳細共有のテスト。
+      date: '2020-05-24',
+      user_id: yamaguro.id,
+      content_id: scheduleContentMissReturn.id,
+      schedule_content_id: scheduleContentMissReturn.id,
+      created_at: DateTime.now,
+      updated_at: DateTime.now,
+    },
+    { # 山黒の予定。別ユーザーとの日程重複のテスト。
+      date: '2020-05-31',
+      user_id: yamaguro.id,
+      content_id: scheduleContentPoaching.id,
+      schedule_content_id: scheduleContentPoaching.id,
+      created_at: DateTime.now,
+      updated_at: DateTime.now,
+    },
+  ]
+)
