@@ -1,6 +1,6 @@
-<div>削除しますか？</div>
-<p>タイトル: <%=session[:schedule]["title"]%></p>
-<p>詳細: <%=session[:schedule]["detail"]%></p>
+<div>以下の予定を削除しますか？</div>
+<p>タイトル: <%=params[:schedule_id]%></p>
+<p>詳細: <%=params[:schedule_id]%></p>
 <h2>
-<%= link_to "削除" , {controller: :calendars, action: :deleteConfirm},method: :post %>
+<%= link_to "削除" , {controller: :access_schedules, action: :deleteSchedule},method: :post %>
 </h2>
