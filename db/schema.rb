@@ -10,12 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_01_24_135519) do
+# カラム削除のコマンド(migrationファイルを作成し、migrateを実行)
+# rails generate migration RemoveScheduleContentIdFromSchedules schedule_content_id:integer
+# rails db:migrate
+
+# カラム編集のコマンド(migrationファイルを作成し、migrateを実行。started_at)
+# rails g migration ChangeDatatypeStartedAtOfScheduleContents
+# ※マイグレーションファイルに追記 -> change_column :schedule_contents, :started_at, :string, :limit=>8
+# rails db:migrate
+
+# カラム編集のコマンド(migrationファイルを作成し、migrateを実行。started_at)
+# rails g migration ChangeDatatypeEndedAtOfScheduleContents
+# ※マイグレーションファイルに追記 -> change_column :schedule_contents, :ended_at, :string, :limit=>8
+# rails db:migrate
+
+ActiveRecord::Schema.define(version: 2020_04_05_125033) do
 
   create_table "schedule_contents", force: :cascade do |t|
     t.string "title", limit: 50, null: false
-    t.datetime "started_at"
-    t.datetime "ended_at"
+    t.string "started_at", limit: 8
+    t.string "ended_at", limit: 8
     t.text "detail"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -25,10 +39,8 @@ ActiveRecord::Schema.define(version: 2020_01_24_135519) do
     t.date "date", null: false
     t.integer "user_id", null: false
     t.integer "content_id"
-    t.integer "schedule_content_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["schedule_content_id"], name: "index_schedules_on_schedule_content_id"
     t.index ["user_id"], name: "index_schedules_on_user_id"
   end
 

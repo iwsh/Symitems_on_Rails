@@ -38,7 +38,6 @@ class AccessSchedulesController < ApplicationController
     @schedule.update(
       # date: updateSchedule[:date], #日付も更新する仕様の場合。ごっちゃんから受け取らない場合は、本メソッドでinsertSchedule[:started_at]から取得
       content_id: updateScheduleContentId,
-      schedule_content_id: updateScheduleContentId,
       updated_at: DateTime.now
     )
   end
@@ -61,7 +60,6 @@ class AccessSchedulesController < ApplicationController
       date: insertSchedule[:date], #ごっちゃんから受け取らない場合は、本メソッドでinsertSchedule[:started_at]から取得
       user_id: userId,
       content_id: insertedScheduleContent.id,
-      schedule_content_id: insertedScheduleContent.id,
       created_at: DateTime.now,
       updated_at: DateTime.now
     )

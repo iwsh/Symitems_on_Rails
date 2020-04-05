@@ -10,13 +10,17 @@
 # 注意：以下のデータと共通のdetailをinsertしないこと。
 # 注意：以下のデータはupdate、deleteをしないこと。
 
-# 以下データ消去、確認用SQL
-# delete from users;
-# delete from Schedule_contents;
-# delete from Schedules;
+# テーブル構造確認用SQL
+# .schema
+
+# データ確認用SQL
 # select * from users;
 # select * from Schedule_contents;
 # select * from Schedules;
+
+Schedule.delete_all
+ScheduleContent.delete_all
+User.delete_all
 
 # テストユーザー。2人
 User.create!(
@@ -45,40 +49,40 @@ ScheduleContent.create!(
   [
     {
       title: '仕事',
-      started_at: '2020-04-26 06:00:00',
-      ended_at: '2020-04-26 18:00:00',
+      started_at: '06:00:00',
+      ended_at: '18:00:00',
       detail: '小黒まず働く',
       created_at: DateTime.now,
       updated_at: DateTime.now,
     },
     {
       title: '残業',
-      started_at: '2020-04-26 18:00:00',
-      ended_at: '2020-04-26 23:00:00',
+      started_at: '18:00:00',
+      ended_at: '23:00:00',
       detail: '小黒再び働く',
       created_at: DateTime.now,
       updated_at: DateTime.now,
     },
     {
       title: '休日出勤に気が付く',
-      started_at: '2020-05-31 18:00:00',
-      ended_at: '2020-05-31 23:00:00',
+      started_at: '18:00:00',
+      ended_at: '23:00:00',
       detail: '小黒またも休日出勤',
       created_at: DateTime.now,
       updated_at: DateTime.now,
     },
     {
       title: '帰省失敗',
-      started_at: '2020-05-24 10:00:00',
-      ended_at: '2020-05-24 10:30:00',
+      started_at: '10:00:00',
+      ended_at: '10:30:00',
       detail: '小黒も山黒もバスをとり間違える',
       created_at: DateTime.now,
       updated_at: DateTime.now,
     },
     {
       title: '密漁',
-      started_at: '2020-05-31 12:00:00',
-      ended_at: '2020-05-31 18:00:00',
+      started_at: '12:00:00',
+      ended_at: '18:00:00',
       detail: '山黒カニをたくさんとる',
       created_at: DateTime.now,
       updated_at: DateTime.now,
@@ -102,7 +106,6 @@ Schedule.create!(
       date: '2020-04-26',
       user_id: oguro.id,
       content_id: scheduleContentPoaching.id,
-      schedule_content_id: scheduleContentPoaching.id,
       created_at: DateTime.now,
       updated_at: DateTime.now,
     },
@@ -110,7 +113,6 @@ Schedule.create!(
       date: '2020-04-26',
       user_id: oguro.id,
       content_id: scheduleContentReWork.id,
-      schedule_content_id: scheduleContentReWork.id,
       created_at: DateTime.now,
       updated_at: DateTime.now,
     },
@@ -118,7 +120,6 @@ Schedule.create!(
       date: '2020-05-31',
       user_id: oguro.id,
       content_id: scheduleContentReHolidayWork.id,
-      schedule_content_id: scheduleContentReHolidayWork.id,
       created_at: DateTime.now,
       updated_at: DateTime.now,
     },
@@ -126,7 +127,6 @@ Schedule.create!(
       date: '2020-05-24',
       user_id: oguro.id,
       content_id: scheduleContentMissReturn.id,
-      schedule_content_id: scheduleContentMissReturn.id,
       created_at: DateTime.now,
       updated_at: DateTime.now,
     },
@@ -134,7 +134,6 @@ Schedule.create!(
       date: '2020-05-24',
       user_id: yamaguro.id,
       content_id: scheduleContentMissReturn.id,
-      schedule_content_id: scheduleContentMissReturn.id,
       created_at: DateTime.now,
       updated_at: DateTime.now,
     },
@@ -142,7 +141,6 @@ Schedule.create!(
       date: '2020-05-31',
       user_id: yamaguro.id,
       content_id: scheduleContentPoaching.id,
-      schedule_content_id: scheduleContentPoaching.id,
       created_at: DateTime.now,
       updated_at: DateTime.now,
     },
