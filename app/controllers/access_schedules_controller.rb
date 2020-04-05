@@ -19,12 +19,8 @@ class AccessSchedulesController < ApplicationController
   def updateSchedule(updateSchedule)
     # userId = 2 #session対応完了までの暫定対応
     # userId = session[:user]["id"] #TODO:本番用コード
-    Schedule.joins(:schedule_content) #TODO:deleteScheduleでも使っているので、getScheduleContentIdメソッドを作りたい。
     scheduleForId = Hash.new
     scheduleForId = Schedule.where(id: updateSchedule[:id].to_i).where(user_id: updateSchedule[:user_id])
-    p "scheduleForId"
-    p scheduleForId
-    p "end"
     scheduleContentId = scheduleForId[0].content_id
 
     # transaction張りたい
@@ -67,7 +63,7 @@ class AccessSchedulesController < ApplicationController
 
     @schedule = Schedule.create(
       date: insertSchedule[:date], #ごっちゃんから受け取らない場合は、本メソッドでinsertSchedule[:started_at]から取得
-      user_id: updateSchedule[:user_id],
+      user_id: insertSchedule[:user_id],
       content_id: insertedScheduleContent.id,
       schedule_content_id: insertedScheduleContent.id,
       created_at: DateTime.now,
@@ -76,18 +72,19 @@ class AccessSchedulesController < ApplicationController
     @schedule.save
   end
 
-  def deleteSchedule(selectedDeleteScheduleId, isDeleteAll = 1) # deleteScheduleはdeleteConfirm画面から
+  # def deleteSchedule(selectedDeleteScheduleId, isDeleteAll = 1) # deleteScheduleはdeleteConfirm画面から
+  def deleteSchedule
+    selectedDeleteScheduleId = params[:schedule_id]
+    isDeleteAll = 1
     # userId = '2' #TODO:session対応完了までの暫定対応
     userId = session[:user]["id"] #TODO:本番用コード
 
-    Schedule.joins(:schedule_content) #TODO:updateScheduleでも使っているので、getScheduleContentIdメソッドを作りたい。
     selectedDeleteSchedule = Hash.new
     selectedDeleteSchedule = Schedule.where(id: selectedDeleteScheduleId).where(user_id: userId)
-    deleteScheduleContentId = selectedDeleteSchedule.schedule_content.id
+    deleteScheduleContentId = selectedDeleteSchedule[0].content_id
 
     if isDeleteAll == 1
-      Schedule.joins(:schedule_content)
-      @schedule = Schedule.where(id: deleteScheduleContentId)
+      @schedule = Schedule.where(content_id: deleteScheduleContentId)
       @schedule.delete_all
     else
       @schedule = Schedule.find_by(id: deleteScheduleId)

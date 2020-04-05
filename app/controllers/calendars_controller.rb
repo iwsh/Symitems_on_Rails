@@ -23,7 +23,11 @@ class CalendarsController < AccessSchedulesController
   end
 
   def inputSchedule
-    @insertSchedule = ScheduleContent.new
+    if params[:date].present?
+      @date = params[:date]
+    elsif params[:schedule_id].present?
+      @schedule_id = params[:schedule_id]
+    end
   end
 
   def registerSchedule

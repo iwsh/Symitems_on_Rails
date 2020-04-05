@@ -33,7 +33,7 @@ require "time"
     <%= label_tag :'タイトル' %>
     <%=
         if kbn == "add"
-            text_field_tag :title, @insertSchedule[:title], name: "title"
+            text_field_tag :title, "", name: "title"
         elsif kbn == "edit"
             text_field_tag :title, schedule_content["title"], name: "title"
         end
@@ -43,7 +43,7 @@ require "time"
     <%= label_tag :'開始時刻' %>
     <%=
         if kbn == "add"
-            datetime_field_tag :started_at, @insertSchedule[:started_at], name: "started_at"
+            datetime_field_tag :started_at, "", name: "started_at"
         elsif kbn == "edit"
             datetime_field_tag :started_at, DateTime.parse(schedule_content["started_at"]).strftime("%Y-%m-%dT%H:%M"), name: "started_at"
         end
@@ -53,7 +53,7 @@ require "time"
     <%= label_tag :'終了時刻' %>
     <%=
         if kbn == "add"
-            datetime_field_tag :ended_at, @insertSchedule[:ended_at], name: "ended_at"
+            datetime_field_tag :ended_at, "", name: "ended_at"
         elsif kbn == "edit"
             datetime_field_tag :ended_at, DateTime.parse(schedule_content["ended_at"]).strftime("%Y-%m-%dT%H:%M"), name: "ended_at"
         end
@@ -63,7 +63,7 @@ require "time"
     <%= label_tag :'説明' %>
     <%=
         if kbn == "add"
-            text_field_tag :detail, @insertSchedule[:detail], name: "detail"
+            text_field_tag :detail, "", name: "detail"
         elsif kbn == "edit"
             text_field_tag :detail, schedule_content["detail"], name: "detail"
         end
