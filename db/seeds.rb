@@ -6,6 +6,27 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
+# カラム削除のコマンド(migrationファイルを作成し、migrateを実行)
+# rails generate migration RemoveScheduleContentIdFromSchedules schedule_content_id:integer
+# rails db:migrate
+
+# カラム編集のコマンド(migrationファイルを作成し、migrateを実行。started_at)
+# rails g migration ChangeDatatypeStartedAtOfScheduleContents
+# ※マイグレーションファイルに追記 -> change_column :schedule_contents, :started_at, :string, :limit=>8
+# rails db:migrate
+
+# カラム編集のコマンド(migrationファイルを作成し、migrateを実行。started_at)
+# rails g migration ChangeDatatypeEndedAtOfScheduleContents
+# ※マイグレーションファイルに追記 -> change_column :schedule_contents, :ended_at, :string, :limit=>8
+# rails db:migrate
+
+# カラム削除のコマンド(migrationファイルを作成し、migrateを実行)
+# rails generate migration RemoveContentIdFromSchedules content_id:integer
+# schedule_content_id以外の名前(content_id)という名前で schedule_contents.id への外部キー制約を持つカラムを作成し制約をはる
+# rails g migration AddContentIdToSchedules ContentId:references
+# ※マイグレーションファイルに記載 -> add_reference :schedules, :content, foreign_key: { to_table: :schedule_contents }
+# rails db:migrate
+
 # テストデータの作成。Symitems_on_Railsディレクトリ配下でコマンドrake db:seedを実行する。
 # 注意：以下のデータと共通のdetailをinsertしないこと。
 # 注意：以下のデータはupdate、deleteをしないこと。
