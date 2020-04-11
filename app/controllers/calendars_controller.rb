@@ -18,8 +18,8 @@ class CalendarsController < AccessSchedulesController
       @year = Date.today.year
       @month = Date.today.month
     end
-    @userId = 2
-    @schedules = AccessSchedulesController.new.getSchedule(@userId,@year,@month)
+    userId = session[:user]["id"]
+    @schedules = AccessSchedulesController.new.getSchedule(userId, @year, @month)
   end
 
   def inputSchedule #GOTO
