@@ -1,11 +1,12 @@
 <h1>Calendars#calendar</h1>
 <p>Find me in app/views/calendars/calendar.html.erb</p>
 <p>User: <%=session[:user]["name"]%></p>
-<%= link_to "logout", "logout" %>
-<!-- <%= link_to "logout", "/logout" %> -->
+<%= link_to "logout", "/logout" %>
 <%
 year = @year.to_i
 month = @month.to_i
+session[:schedules] = nil
+session[:schedule_contents] = nil
 %>
 <table width="100%">
   <tr><td width="60%" height="420">
@@ -60,16 +61,26 @@ month = @month.to_i
     </table>
     </td><td width="40%" valign="baseline">
       <div id="area1" style="display:none;">
+        <% session[:schedules] = nil %>
+        <% session[:schedule_contents] = nil %>
+        <% schedules_hash = Hash.new %>
+        <% schedule_contents_hash = Hash.new %>
         <% for x in 1..last_day.day do %>
           <div id="date<%= x %>" style="display:none;">
-            <h3><%= year %>/<%= month %>/<%= x %>の予定</h3>
+            <h3><%= year %>/<%= month %>/<%= x %>の予定<!-- 本来はモーダル表示 --><%= button_to "追加", "/add/#{@year}-#{@month}-#{x}", {method: :get} %><!-- ここまで --></h3>
             <% @schedules.each do |day, schedule| %>
               <% if day == x %>
-                <%= (schedule.schedule_content.started_at) %> ~ <%= (schedule.schedule_content.ended_at) %>：<%= schedule.schedule_content.title %><br>
+                <% schedules_hash[schedule.id.to_s.to_sym] = schedule %>
+                <% schedule_contents_hash[schedule.id.to_s.to_sym] = schedule.schedule_content %>
+                <%= schedule.schedule_content.started_at %> ~ <%= schedule.schedule_content.ended_at %>：<%= schedule.schedule_content.title %><br>
                 <%= schedule.schedule_content.detail %>
+                <%= link_to "編集", "/edit/#{schedule.id}", class: 'btn btn-default' %>
+                <%= link_to "削除", "/deleteConfirm/#{schedule.id}", class: 'btn btn-default' %>
               <% end %>
             <% end %>
           </div>
+          <% session[:schedules] = schedules_hash %>
+          <% session[:schedule_contents] = schedule_contents_hash %>
         <% end %>
       </div>
     </td>
@@ -81,17 +92,6 @@ month = @month.to_i
       </tr>
     </table></td>
     <td width="40%">
-    <div id="area2" style="display:none;">
-      <table width="100%">
-        <tr>
-          <!-- 以下、本来はモーダル表示 -->
-          <td width="33%" align="left"><%= button_to "削除","/calendar/#{@year}/#{@month-1}", {method: :get} %></td>
-          <td width="33%" align="center"><%= button_to "編集","/calendar", {method: :get} %></td>
-          <td width="33%" align="right"><%= button_to "追加","/calendar/#{@year}/#{@month+1}", {method: :get} %></td>
-          <!-- ここまで -->
-        </tr>
-      </table>
-    </div>
     </td>
   </tr>
 </table>
@@ -99,10 +99,8 @@ month = @month.to_i
 <script language="JavaScript" type="text/javascript">
 <!--
 var elem0_1 = document.getElementById("area1");
-var elem0_2 = document.getElementById("area2");
 function disp() {
   elem0_1.style.display = "";
-  elem0_2.style.display = "";
 }
 function cont(date) {
   var d = date.id.split("/");
