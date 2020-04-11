@@ -73,7 +73,7 @@ session[:schedule_contents] = nil
               <% if day == x %>
                 <% schedules_hash[schedule.id.to_s.to_sym] = schedule %>
                 <% schedule_contents_hash[schedule.id.to_s.to_sym] = schedule.schedule_content %>
-                <%= (schedule.schedule_content.started_at).strftime("%H:%M:%S") %> ~ <%= (schedule.schedule_content.ended_at).strftime("%H:%M:%S") %>：<%= schedule.schedule_content.title %><br>
+                <%= schedule.schedule_content.started_at %> ~ <%= schedule.schedule_content.ended_at %>：<%= schedule.schedule_content.title %><br>
                 <%= schedule.schedule_content.detail %>
                 <%= link_to "編集", "/edit/#{schedule.id}", class: 'btn btn-default' %>
                 <%= link_to "削除", "/deleteConfirm/#{schedule.id}", class: 'btn btn-default' %>

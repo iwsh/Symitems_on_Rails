@@ -10,12 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_01_24_135519) do
+ActiveRecord::Schema.define(version: 2020_04_10_091747) do
 
   create_table "schedule_contents", force: :cascade do |t|
     t.string "title", limit: 50, null: false
-    t.datetime "started_at"
-    t.datetime "ended_at"
+    t.string "started_at", limit: 8
+    t.string "ended_at", limit: 8
     t.text "detail"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -24,11 +24,10 @@ ActiveRecord::Schema.define(version: 2020_01_24_135519) do
   create_table "schedules", force: :cascade do |t|
     t.date "date", null: false
     t.integer "user_id", null: false
-    t.integer "content_id"
-    t.integer "schedule_content_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["schedule_content_id"], name: "index_schedules_on_schedule_content_id"
+    t.integer "content_id"
+    t.index ["content_id"], name: "index_schedules_on_content_id"
     t.index ["user_id"], name: "index_schedules_on_user_id"
   end
 
