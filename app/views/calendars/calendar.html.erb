@@ -41,9 +41,9 @@ session[:schedule_contents] = nil
           <td height="60" valign="baseline">
             <a href="#" id="<%= first_day.day %>/<%= last_day.day %>" onClick="cont(this);disp();return false;"><%= first_day.day %></a><br>
             <% cnt = 0 %>
-            <% @schedules.each do |day, schedule| %>
+            <% @schedules.each do |day, scheduleList| %>
               <% if day == first_day.day %>
-                <% cnt += 1 %>
+                <% cnt = scheduleList.count %>
               <% end %>
             <% end %>
             <% if cnt > 0 %>
@@ -68,14 +68,16 @@ session[:schedule_contents] = nil
         <% for x in 1..last_day.day do %>
           <div id="date<%= x %>" style="display:none;">
             <h3><%= year %>/<%= month %>/<%= x %>の予定<!-- 本来はモーダル表示 --><%= button_to "追加", "/add/#{@year}-#{@month}-#{x}", {method: :get} %><!-- ここまで --></h3>
-            <% @schedules.each do |day, schedule| %>
+            <% @schedules.each do |day, scheduleList| %>
               <% if day == x %>
-                <% schedules_hash[schedule.id.to_s.to_sym] = schedule %>
-                <% schedule_contents_hash[schedule.id.to_s.to_sym] = schedule.schedule_content %>
-                <%= schedule.schedule_content.started_at %> ~ <%= schedule.schedule_content.ended_at %>：<%= schedule.schedule_content.title %><br>
-                <%= schedule.schedule_content.detail %>
-                <%= link_to "編集", "/edit/#{schedule.id}", class: 'btn btn-default' %>
-                <%= link_to "削除", "/deleteConfirm/#{schedule.id}", class: 'btn btn-default' %>
+                <% scheduleList.each do |schedule| %>
+                  <% schedules_hash[schedule.id.to_s.to_sym] = schedule %>
+                  <% schedule_contents_hash[schedule.id.to_s.to_sym] = schedule.schedule_content %>
+                  <%= schedule.schedule_content.started_at %> ~ <%= schedule.schedule_content.ended_at %>：<%= schedule.schedule_content.title %><br>
+                  <%= schedule.schedule_content.detail %>
+                  <%= link_to "編集", "/edit/#{schedule.id}", class: 'btn btn-default' %>
+                  <%= link_to "削除", "/deleteConfirm/#{schedule.id}", class: 'btn btn-default' %><br>
+                <% end %>
               <% end %>
             <% end %>
           </div>

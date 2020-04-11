@@ -11,9 +11,12 @@ class AccessSchedulesController < ApplicationController
     displaySchedules = {}
     schedules.each{|schedule|
       day = schedule.date.mday
-      displaySchedules[day] = schedule
+      if displaySchedules[day].nil?
+        displaySchedules[day] = []
+      end
+      displaySchedules[day].push(schedule)
     }
-    return displaySchedules
+      return displaySchedules
   end
 
   def updateSchedule(updateSchedule)
