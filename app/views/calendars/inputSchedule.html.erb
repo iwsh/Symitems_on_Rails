@@ -43,9 +43,11 @@ require "time"
     <%= label_tag :'開始時刻' %>
     <%=
         if kbn == "add"
-            datetime_field_tag :started_at, "", name: "started_at"
+            #datetime_field_tag :started_at, "", name: "started_at"
+            time_field_tag :started_at, "", name: "started_at"
         elsif kbn == "edit"
-            datetime_field_tag :started_at, DateTime.parse(schedule_content["started_at"]).strftime("%Y-%m-%dT%H:%M"), name: "started_at"
+            #datetime_field_tag :started_at, DateTime.parse(schedule_content["started_at"]).strftime("%Y-%m-%dT%H:%M"), name: "started_at"
+            time_field_tag :started_at, Time.parse(schedule_content["started_at"]).strftime("%X"), name: "started_at"
         end
     %>
     </p>
@@ -53,9 +55,9 @@ require "time"
     <%= label_tag :'終了時刻' %>
     <%=
         if kbn == "add"
-            datetime_field_tag :ended_at, "", name: "ended_at"
+            time_field_tag :ended_at, "", name: "ended_at"
         elsif kbn == "edit"
-            datetime_field_tag :ended_at, DateTime.parse(schedule_content["ended_at"]).strftime("%Y-%m-%dT%H:%M"), name: "ended_at"
+            time_field_tag :ended_at, Time.parse(schedule_content["ended_at"]).strftime("%X"), name: "ended_at"
         end
     %>
     </p>

@@ -37,8 +37,8 @@ class CalendarsController < AccessSchedulesController
       insertSchedule[:user_id] = userId
       insertSchedule[:date] = params[:date]
       insertSchedule[:title] = params[:title]
-      insertSchedule[:started_at] = params[:started_at]
-      insertSchedule[:ended_at] = params[:ended_at]
+      insertSchedule[:started_at] = params[:started_at]+":00"
+      insertSchedule[:ended_at] = params[:ended_at]+":00"
       insertSchedule[:detail] = params[:detail]
       AccessSchedulesController.new.insertSchedule(insertSchedule)
     elsif params[:kbn] == "edit"
@@ -47,25 +47,13 @@ class CalendarsController < AccessSchedulesController
       updateSchedule[:id] = params[:schedule_id]
       updateSchedule[:date] = params[:date]
       updateSchedule[:title] = params[:title]
-      updateSchedule[:started_at] = params[:started_at]
-      updateSchedule[:ended_at] = params[:ended_at]
+      updateSchedule[:started_at] = params[:started_at][0..4]+":00"
+      updateSchedule[:ended_at] = params[:ended_at][0..4]+":00"
       updateSchedule[:detail] = params[:detail]
       AccessSchedulesController.new.updateSchedule(updateSchedule)
     end
     redirect_to '/calendar'
   end
-
-  # def edit
-  #   @schedules = AccessSchedulesController.new.getSchedule(@userId,@year,@month)
-  # end
-
-
-  # def update
-  #   @schedule_content = ScheduleContent.find(params[:id])
-  #   @schedule_content.update(params.require(:schedule_content).permit(:title, :stardted_at, :ended_at, :detail))
-  #   redirect_to '/calendar'
-  # end
-
 
   def deleteConfirm
     @schedule_id = params[:schedule_id]

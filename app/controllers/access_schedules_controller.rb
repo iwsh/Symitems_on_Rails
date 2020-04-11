@@ -17,8 +17,6 @@ class AccessSchedulesController < ApplicationController
   end
 
   def updateSchedule(updateSchedule)
-    # userId = 2 #session対応完了までの暫定対応
-    # userId = session[:user]["id"] #TODO:本番用コード
     scheduleForId = Hash.new
     scheduleForId = Schedule.where(id: updateSchedule[:id].to_i).where(user_id: updateSchedule[:user_id])
     scheduleContentId = scheduleForId[0].content_id
@@ -37,15 +35,13 @@ class AccessSchedulesController < ApplicationController
     @schedule = Hash.new
     @schedule = Schedule.find_by(id: updateSchedule[:id])
     @schedule.update(
-      date: updateSchedule[:date], #日付も更新する仕様の場合。ごっちゃんから受け取らない場合は、本メソッドでinsertSchedule[:started_at]から取得
+      date: updateSchedule[:date],
       content_id: scheduleContentId,
       updated_at: DateTime.now
     )
   end
 
   def insertSchedule(insertSchedule)
-    # userId = 2 #session対応完了までの暫定対応
-    # userId = session[:user]["id"] #TODO:本番用コード
 
     # transaction張りたい
     @scheduleContent = ScheduleContent.create(
@@ -61,7 +57,7 @@ class AccessSchedulesController < ApplicationController
     insertedScheduleContent = ScheduleContent.last
 
     @schedule = Schedule.create(
-      date: insertSchedule[:date], #ごっちゃんから受け取らない場合は、本メソッドでinsertSchedule[:started_at]から取得
+      date: insertSchedule[:date],
       user_id: insertSchedule[:user_id],
       content_id: insertedScheduleContent.id,
       created_at: DateTime.now,
@@ -70,12 +66,10 @@ class AccessSchedulesController < ApplicationController
     @schedule.save
   end
 
-  # def deleteSchedule(selectedDeleteScheduleId, isDeleteAll = 1) # deleteScheduleはdeleteConfirm画面から
   def deleteSchedule
     selectedDeleteScheduleId = params[:schedule_id]
     isDeleteAll = 1
-    # userId = '2' #TODO:session対応完了までの暫定対応
-    userId = session[:user]["id"] #TODO:本番用コード
+    userId = session[:user]["id"]
 
     selectedDeleteSchedule = Hash.new
     selectedDeleteSchedule = Schedule.where(id: selectedDeleteScheduleId).where(user_id: userId)
