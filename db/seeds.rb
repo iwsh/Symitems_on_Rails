@@ -126,7 +126,7 @@ Schedule.create!(
     { # 小黒の予定。同一ユーザー同一日の複数詳細のテスト。
       date: '2020-04-26',
       user_id: oguro.id,
-      content_id: scheduleContentPoaching.id,
+      content_id: scheduleContentIdWork.id,
       created_at: DateTime.now,
       updated_at: DateTime.now,
     },
