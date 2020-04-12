@@ -1,0 +1,118 @@
+<h1>Calendars#calendar</h1>
+<p>Find me in app/views/calendars/calendar.html.erb</p>
+<p>User: <%=session[:user]["name"]%></p>
+<%= link_to "logout", "/logout" %>
+<%
+year = @year.to_i
+month = @month.to_i
+session[:schedules] = nil
+session[:schedule_contents] = nil
+%>
+<table width="100%">
+  <tr><td width="60%" height="420">
+    <table border width="100%" height="370">
+      <caption><h2><%= link_to "/calendar/#{@year}/#{@month-1}", {method: :get} do %><div style="width:0;height:0;border-top:solid 8px transparent;border-left:solid 8px transparent;border-bottom:solid 8px transparent;border-right:solid 8px #7a0;display:inline-block;_display:inline;"></div><% end %>　<%= year %>/<%= month %>　<%= link_to "/calendar/#{@year}/#{@month+1}", {method: :get} do %><div style="width:0;height:0;border-top:solid 8px transparent;border-right:solid 8px transparent;border-bottom:solid 8px transparent;border-left:solid 8px #7a0;display:inline-block;_display:inline;"></div><% end %></h2></caption>
+      <tr>
+        <th width="14%" height="35" style="color:red;">Sun</th>
+        <th width="14%" height="35" >Mon</th>
+        <th width="14%" height="35" >Tue</th>
+        <th width="14%" height="35" >Wed</th>
+        <th width="14%" height="35" >Thu</th>
+        <th width="14%" height="35" >Fri</th>
+        <th width="14%" height="35" style="color:blue;">Sat</th>
+      </tr>
+      <tr>
+      <%
+        require 'date'
+        first_day = Date.new(year,month,1)
+        last_day = Date.new(year,month,-1)
+        if first_day.wday != 0 then
+          for x in 1..first_day.wday do
+      %>
+            <td height="60"></td>
+          <% end %>
+        <% end %>
+      <%
+        for d in 1..last_day.day do
+          if first_day.wday == 0 && first_day.day != 1 then
+      %>
+            </tr><tr>
+          <% end %>
+          <td height="60" valign="baseline">
+            <a href="#" id="<%= first_day.day %>/<%= last_day.day %>" onClick="cont(this);disp();return false;"><%= first_day.day %></a><br>
+            <% cnt = 0 %>
+            <% @schedules.each do |day, scheduleList| %>
+              <% if day == first_day.day %>
+                <% cnt = scheduleList.count %>
+              <% end %>
+            <% end %>
+            <% if cnt > 0 %>
+              <span>予定：<%= cnt %>件</span>
+            <% end %>
+          </td>
+          <% first_day = first_day.next
+        end %>
+      <%
+        if first_day.wday != 0 then
+          for x in first_day.wday..6 do %>
+            <td height="60"></td>
+          <% end
+        end %>
+    </table>
+    </td><td width="40%" valign="baseline">
+      <div id="area1" style="display:none;">
+        <% session[:schedules] = nil %>
+        <% session[:schedule_contents] = nil %>
+        <% schedules_hash = Hash.new %>
+        <% schedule_contents_hash = Hash.new %>
+        <% for x in 1..last_day.day do %>
+          <div id="date<%= x %>" style="display:none;">
+            <h3><%= year %>/<%= month %>/<%= x %>の予定<!-- 本来はモーダル表示 --><%= button_to "追加", "/add/#{@year}-#{@month}-#{x}", {method: :get} %><!-- ここまで --></h3>
+            <% @schedules.each do |day, scheduleList| %>
+              <% if day == x %>
+                <% scheduleList.each do |schedule| %>
+                  <% schedules_hash[schedule.id.to_s.to_sym] = schedule %>
+                  <% schedule_contents_hash[schedule.id.to_s.to_sym] = schedule.schedule_content %>
+                  <%= schedule.schedule_content.started_at %> ~ <%= schedule.schedule_content.ended_at %>：<%= schedule.schedule_content.title %><br>
+                  <%= schedule.schedule_content.detail %>
+                  <%= link_to "編集", "/edit/#{schedule.id}", class: 'btn btn-default' %>
+                  <%= link_to "削除", "/deleteConfirm/#{schedule.id}", class: 'btn btn-default' %><br>
+                <% end %>
+              <% end %>
+            <% end %>
+          </div>
+          <% session[:schedules] = schedules_hash %>
+          <% session[:schedule_contents] = schedule_contents_hash %>
+        <% end %>
+      </div>
+    </td>
+  </tr><tr>
+    <td width="60%">
+    <table width="100%">
+      <tr>
+        <td width="33%" align="center"><%= button_to "今月へ","/calendar", {method: :get} %></td>
+      </tr>
+    </table></td>
+    <td width="40%">
+    </td>
+  </tr>
+</table>
+
+<script language="JavaScript" type="text/javascript">
+<!--
+var elem0_1 = document.getElementById("area1");
+function disp() {
+  elem0_1.style.display = "";
+}
+function cont(date) {
+  var d = date.id.split("/");
+  for ( var i = 1 ; i <= d[1] ; i++ ) {
+    if (i == d[0] ) {
+      document.getElementById("date"+i).style.display = "";
+    } else {
+      document.getElementById("date"+i).style.display = "none";
+    }
+  }
+}
+-->
+</script>

@@ -1,0 +1,10 @@
+<div>以下の予定を削除しますか？</div>
+<%
+    schedule_id = params[:schedule_id]
+    schedule_content = session[:schedule_contents]["#{schedule_id}"]
+%>
+<p>タイトル: <%=schedule_content["title"]%></p>
+<p>詳細: <%=schedule_content["detail"]%></p>
+<%= form_tag({controller: :access_schedules, action: :deleteSchedule}, {method: :post}) %>
+    <%= hidden_field_tag :schedule_id, schedule_id, name: "schedule_id" %>
+    <%= submit_tag "削除" %>
