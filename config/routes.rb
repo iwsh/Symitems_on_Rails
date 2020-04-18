@@ -11,5 +11,9 @@ Rails.application.routes.draw do
   post 'calendars/registerSchedule'
   get 'deleteConfirm/:schedule_id' => 'calendars#deleteConfirm'
   post 'access_schedules/deleteSchedule'
+
+  # モーダル用
+  get 'dialog' => 'calendars#dialog'
+
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end
