@@ -1,51 +1,3 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>jQuery UI Dialog - Default functionality</title>
-  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-  <link rel="stylesheet" href="/resources/demos/style.css">
-  <script language="JavaScript" type="text/javascript">
-  <!--
-  var elem0_1 = document.getElementById("area1");
-  function disp() {
-    elem0_1.style.display = "";
-  }
-  function cont(date) {
-    var d = date.id.split("/");
-    for ( var i = 1 ; i <= d[1] ; i++ ) {
-      if (i == d[0] ) {
-        document.getElementById("date"+i).style.display = "";
-      } else {
-        document.getElementById("date"+i).style.display = "none";
-      }
-    }
-  }
-  -->
-  </script>
-  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-  <script>
-  for ( var i = 1 ; i <= 30 ; i++ ) {
-  $( function() {
-    var  add, modal
-     add = $( "#add"+i ).dialog({
-      autoOpen: false,
-      height: 400,
-      width: 800,
-      modal: true
-    });
-
-    modal = $( "#modal"+i ).button().on( "click", function() {
-       add.dialog( "open" );
-    });
-
-  } );
-  }
-  </script>
-</head>
-<body>
 <h1>Calendars#calendar</h1>
 <p>Find me in app/views/calendars/calendar.html.erb</p>
 <p>User: <%=session[:user]["name"]%></p>
@@ -65,11 +17,9 @@ session[:schedule_contents] = nil
       width: 800,
       modal: true
     });
-
     modal = $( "[id^=modal]" ).button().on( "click", function() {
       add.dialog( "open" );
     });
-
   } );
 </script>
 <table width="100%">
@@ -133,33 +83,8 @@ session[:schedule_contents] = nil
           <div id="date<%= x %>" style="display:none;">
             <h3><%= year %>/<%= month %>/<%= x %>の予定
             <!-- 本来はモーダル表示 -->
-            <!--<%= button_to "追加", "/add/#{@year}-#{@month}-#{x}", {method: :get} %>-->
-            <button id="modal<%= x %>">スケジュール作成</button>
-            <div id="add<%= x %>" title="新規作成">
-              <h2>スケジュール画面</h2>
-              <%= form_tag({controller: :calendars, action: :registerSchedule}, {method: :post}) %>
-                <p>
-                <%= label_tag :'日付' %>
-                <%= date_field_tag :date, x, name: "date" %>
-                </p>
-                <p>
-                <%= label_tag :'タイトル' %>
-                <%= text_field_tag :title, "", name: "title" %>
-                </p>
-                <p>
-                <%= label_tag :'開始時刻' %>
-                <%= time_field_tag :started_at, "", name: "started_at" %>
-                </p>
-                <p>
-                <%= label_tag :'終了時刻' %>
-                <%= time_field_tag :ended_at, "", name: "ended_at" %>
-                </p>
-                <p>
-                <%= label_tag :'説明' %>
-                <%= text_field_tag :detail, "", name: "detail" %>
-                </p>
-                <%= submit_tag "作成" %>
-            </div>
+            <!-- <%= button_to "追加", "/add/#{@year}-#{@month}-#{x}", {method: :get} %> -->
+            <button id="modal<%= x %>">追加</button>
             <!-- ここまで -->
             </h3>
             <% @schedules.each do |day, scheduleList| %>
@@ -192,6 +117,56 @@ session[:schedule_contents] = nil
   </tr>
 </table>
 
-</body>
-</html>
+<div id="add" title="SoR Calendar - New Schedule">
+  <h2>スケジュール追加画面</h2>
+  <%= form_tag({controller: :calendars, action: :registerSchedule}, {method: :post}) %>
+    <%= hidden_field_tag :kbn, "add", name: "kbn" %>
+    <p>
+    <%= label_tag :'日付' %>
+    <%= date_field_tag :date, Date.parse("#{@year}-#{@month}-1"), name: "date" %>
+    </p>
+    <p>
+    <%= label_tag :'タイトル' %>
+    <%= text_field_tag :title, "", name: "title" %>
+    </p>
+    <p>
+    <%= label_tag :'開始時刻' %>
+    <%= time_field_tag :started_at, "", name: "started_at" %>
+    </p>
+    <p>
+    <%= label_tag :'終了時刻' %>
+    <%= time_field_tag :ended_at, "", name: "ended_at" %>
+    </p>
+    <p>
+    <%= label_tag :'説明' %>
+    <%= text_field_tag :detail, "", name: "detail" %>
+    </p>
+    <%= submit_tag "作成" %>
+</div>
+
+<script language="JavaScript" type="text/javascript">
+  <!--
+  var elem0_1 = document.getElementById("area1");
+  function disp() {
+    elem0_1.style.display = "";
+  }
+  function cont(date) {
+    var d = date.id.split("/");
+    for ( var i = 1 ; i <= d[1] ; i++ ) {
+      if ( i == d[0] ) {
+        document.getElementById("date"+i).style.display = "";
+        var dd = document.querySelector("input[id='date']").value.split("-");
+        if ( i < 10 ) {
+          var moji_date = dd[0]+"-"+dd[1]+"-0"+i;
+        } else {
+          var moji_date = dd[0]+"-"+dd[1]+"-"+i;
+        }
+        document.querySelector("input[id='date']").value = moji_date;
+      } else {
+        document.getElementById("date"+i).style.display = "none";
+      }
+    }
+  }
+  -->
+</script>
 
