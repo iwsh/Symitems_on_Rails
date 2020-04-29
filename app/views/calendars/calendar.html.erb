@@ -8,6 +8,22 @@ month = @month.to_i
 session[:schedules] = nil
 session[:schedule_contents] = nil
 %>
+<script>
+  $( function() {
+    var  add, modal
+    add = $( "#add" ).dialog({
+      autoOpen: false,
+      height: 400,
+      width: 800,
+      modal: true
+    });
+
+    modal = $( "[id^=modal]" ).button().on( "click", function() {
+      add.dialog( "open" );
+    });
+
+  } );
+</script>
 <table width="100%">
   <tr><td width="60%" height="420">
     <table border width="100%" height="370">
@@ -39,7 +55,7 @@ session[:schedule_contents] = nil
             </tr><tr>
           <% end %>
           <td height="60" valign="baseline">
-            <a href="#" id="<%= first_day.day %>/<%= last_day.day %>" onClick="cont(this);disp();return false;"><%= first_day.day %></a><br>
+            <a href="" id="<%= first_day.day %>/<%= last_day.day %>" onClick="cont(this);disp();return false;"><%= first_day.day %></a><br>
             <% cnt = 0 %>
             <% @schedules.each do |day, scheduleList| %>
               <% if day == first_day.day %>
@@ -67,7 +83,12 @@ session[:schedule_contents] = nil
         <% schedule_contents_hash = Hash.new %>
         <% for x in 1..last_day.day do %>
           <div id="date<%= x %>" style="display:none;">
-            <h3><%= year %>/<%= month %>/<%= x %>の予定<!-- 本来はモーダル表示 --><%= button_to "追加", "/add/#{@year}-#{@month}-#{x}", {method: :get} %><!-- ここまで --></h3>
+            <h3><%= year %>/<%= month %>/<%= x %>の予定
+            <!-- 本来はモーダル表示 -->
+            <!-- <%= button_to "追加", "/add/#{@year}-#{@month}-#{x}", {method: :get} %> -->
+            <button id="modal<%= x %>">追加</button>
+            <!-- ここまで -->
+            </h3>
             <% @schedules.each do |day, scheduleList| %>
               <% if day == x %>
                 <% scheduleList.each do |schedule| %>
@@ -98,21 +119,48 @@ session[:schedule_contents] = nil
   </tr>
 </table>
 
+<div id="add" title="SoR Calendar - New Schedule">
+  <h2>スケジュール追加画面</h2>
+  <%= form_tag({controller: :calendars, action: :registerSchedule}, {method: :post}) %>
+    <%= hidden_field_tag :kbn, "add", name: "kbn" %>
+    <p>
+    <%= label_tag :'日付' %>
+    <%= date_field_tag :date, "", name: "date" %>
+    </p>
+    <p>
+    <%= label_tag :'タイトル' %>
+    <%= text_field_tag :title, "", name: "title" %>
+    </p>
+    <p>
+    <%= label_tag :'開始時刻' %>
+    <%= time_field_tag :started_at, "", name: "started_at" %>
+    </p>
+    <p>
+    <%= label_tag :'終了時刻' %>
+    <%= time_field_tag :ended_at, "", name: "ended_at" %>
+    </p>
+    <p>
+    <%= label_tag :'説明' %>
+    <%= text_field_tag :detail, "", name: "detail" %>
+    </p>
+    <%= submit_tag "作成" %>
+</div>
+
 <script language="JavaScript" type="text/javascript">
-<!--
-var elem0_1 = document.getElementById("area1");
-function disp() {
-  elem0_1.style.display = "";
-}
-function cont(date) {
-  var d = date.id.split("/");
-  for ( var i = 1 ; i <= d[1] ; i++ ) {
-    if (i == d[0] ) {
-      document.getElementById("date"+i).style.display = "";
-    } else {
-      document.getElementById("date"+i).style.display = "none";
+  <!--
+  var elem0_1 = document.getElementById("area1");
+  function disp() {
+    elem0_1.style.display = "";
+  }
+  function cont(date) {
+    var d = date.id.split("/");
+    for ( var i = 1 ; i <= d[1] ; i++ ) {
+      if (i == d[0] ) {
+        document.getElementById("date"+i).style.display = "";
+      } else {
+        document.getElementById("date"+i).style.display = "none";
+      }
     }
   }
-}
--->
+  -->
 </script>

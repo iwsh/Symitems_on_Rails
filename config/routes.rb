@@ -6,7 +6,7 @@ Rails.application.routes.draw do
 
   get 'calendar' => 'calendars#calendar'
   get 'calendar/:year/:month' => 'calendars#calendar'
-  get 'add/:date' => 'calendars#inputSchedule'
+  # get 'add/:date' => 'calendars#inputSchedule'
   get 'edit/:schedule_id' => 'calendars#inputSchedule'
   post 'calendars/registerSchedule'
   get 'deleteConfirm/:schedule_id' => 'calendars#deleteConfirm'
