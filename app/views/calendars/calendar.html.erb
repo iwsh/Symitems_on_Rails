@@ -117,14 +117,13 @@ session[:schedule_contents] = nil
           <div id="date<%= x %>" style="display:none;">
             <h3><%= year %>/<%= month %>/<%= x %>の予定
             <!-- 本来はモーダル表示 -->
-            <!--<%= button_to "追加", "/add/#{@year}-#{@month}-#{x}", {method: :get} %>-->
             <button id="modal<%= x %>">スケジュール作成</button>
             <div id="add<%= x %>" title="新規作成">
               <h2>スケジュール画面</h2>
               <%= form_tag({controller: :calendars, action: :registerSchedule}, {method: :post}) %>
                 <p>
                 <%= label_tag :'日付' %>
-                <%= date_field_tag :date, x, name: "date" %>
+                <%= date_field_tag :date, Date.parse("#{@year}-#{@month}-#{x}"), name: "date" %>
                 </p>
                 <p>
                 <%= label_tag :'タイトル' %>
