@@ -69,10 +69,13 @@ class AccessSchedulesController < ApplicationController
     @schedule.save
   end
 
-  def deleteSchedule
-    selectedDeleteScheduleId = params[:schedule_id]
+  # def deleteSchedule
+  def deleteSchedule(deleteSchedule)
+    # selectedDeleteScheduleId = params[:schedule_id]
+    selectedDeleteScheduleId = deleteSchedule[:id]
     isDeleteAll = 1
-    userId = session[:user]["id"]
+    # userId = session[:user]["id"]
+    userId = deleteSchedule[:user_id]
 
     selectedDeleteSchedule = Hash.new
     selectedDeleteSchedule = Schedule.where(id: selectedDeleteScheduleId).where(user_id: userId)

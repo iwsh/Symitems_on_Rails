@@ -5,20 +5,34 @@
 <%
 year = @year.to_i
 month = @month.to_i
-session[:schedules] = nil
-session[:schedule_contents] = nil
+# session[:schedules] = nil
+# session[:schedule_contents] = nil
 %>
 <script>
   $( function() {
-    var  add, modal
-    add = $( "#add" ).dialog({
-      autoOpen: false,
-      height: 400,
-      width: 800,
-      modal: true
-    });
+    var add, edit, del, inputSchedule, modal
+    add = $( "[id^=add]" ).dialog({
+        autoOpen: false,
+        height: 400,
+        width: 800,
+        modal: true
+      });
+    edit = $( "[id^=edit]" ).dialog({
+        autoOpen: false,
+        height: 400,
+        width: 800,
+        modal: true
+      });
+    del = $( "[id^=del]" ).dialog({
+        autoOpen: false,
+        height: 400,
+        width: 800,
+        modal: true
+      });
     modal = $( "[id^=modal]" ).button().on( "click", function() {
-      add.dialog( "open" );
+      var kbn = $(this).attr('id').split("-")[1];
+      var num = $(this).attr('id').split("-")[2];
+      $( "#"+kbn+"-"+num ).dialog( "open" );
     });
   } );
 </script>
@@ -75,33 +89,37 @@ session[:schedule_contents] = nil
     </table>
     </td><td width="40%" valign="baseline">
       <div id="area1" style="display:none;">
-        <% session[:schedules] = nil %>
-        <% session[:schedule_contents] = nil %>
-        <% schedules_hash = Hash.new %>
-        <% schedule_contents_hash = Hash.new %>
+        <!-- <% session[:schedules] = nil %> -->
+        <!-- <% session[:schedule_contents] = nil %> -->
+        <!-- <% schedules_hash = Hash.new %> -->
+        <!-- <% schedule_contents_hash = Hash.new %> -->
+        <% scheduleIdList = [] %>
+        <% scheduleIdHash = {} %>
         <% for x in 1..last_day.day do %>
           <div id="date<%= x %>" style="display:none;">
             <h3><%= year %>/<%= month %>/<%= x %>の予定
-            <!-- 本来はモーダル表示 -->
             <!-- <%= button_to "追加", "/add/#{@year}-#{@month}-#{x}", {method: :get} %> -->
-            <button id="modal<%= x %>">追加</button>
-            <!-- ここまで -->
+            <button id="modal-add-<%= x %>">追加</button>
             </h3>
             <% @schedules.each do |day, scheduleList| %>
               <% if day == x %>
                 <% scheduleList.each do |schedule| %>
-                  <% schedules_hash[schedule.id.to_s.to_sym] = schedule %>
-                  <% schedule_contents_hash[schedule.id.to_s.to_sym] = schedule.schedule_content %>
+                  <% scheduleIdList << schedule.id %>
+                  <% scheduleIdHash[schedule.id.to_s.to_sym] = schedule %>
+                  <!-- <% schedules_hash[schedule.id.to_s.to_sym] = schedule %> -->
+                  <!-- <% schedule_contents_hash[schedule.id.to_s.to_sym] = schedule.schedule_content %> -->
                   <%= schedule.schedule_content.started_at %> ~ <%= schedule.schedule_content.ended_at %>：<%= schedule.schedule_content.title %><br>
                   <%= schedule.schedule_content.detail %>
-                  <%= link_to "編集", "/edit/#{schedule.id}", class: 'btn btn-default' %>
-                  <%= link_to "削除", "/deleteConfirm/#{schedule.id}", class: 'btn btn-default' %><br>
+                  <!-- <%= link_to "編集", "/edit/#{schedule.id}", class: 'btn btn-default' %> -->
+                  <!-- <%= link_to "削除", "/deleteConfirm/#{schedule.id}", class: 'btn btn-default' %><br> -->
+                  <button id="modal-edit-<%= schedule.id %>" style="display:inline-block;_display:inline;">編集</button>
+                  <button id="modal-del-<%= schedule.id %>" style="display:inline-block;_display:inline;">削除</button><br>
                 <% end %>
               <% end %>
             <% end %>
           </div>
-          <% session[:schedules] = schedules_hash %>
-          <% session[:schedule_contents] = schedule_contents_hash %>
+          <!-- <% session[:schedules] = schedules_hash %> -->
+          <!-- <% session[:schedule_contents] = schedule_contents_hash %> -->
         <% end %>
       </div>
     </td>
@@ -117,32 +135,82 @@ session[:schedule_contents] = nil
   </tr>
 </table>
 
-<div id="add" title="SoR Calendar - New Schedule">
-  <h2>スケジュール追加画面</h2>
-  <%= form_tag({controller: :calendars, action: :registerSchedule}, {method: :post}) %>
-    <%= hidden_field_tag :kbn, "add", name: "kbn" %>
-    <p>
-    <%= label_tag :'日付' %>
-    <%= date_field_tag :date, Date.parse("#{@year}-#{@month}-1"), name: "date" %>
-    </p>
-    <p>
-    <%= label_tag :'タイトル' %>
-    <%= text_field_tag :title, "", name: "title" %>
-    </p>
-    <p>
-    <%= label_tag :'開始時刻' %>
-    <%= time_field_tag :started_at, "", name: "started_at" %>
-    </p>
-    <p>
-    <%= label_tag :'終了時刻' %>
-    <%= time_field_tag :ended_at, "", name: "ended_at" %>
-    </p>
-    <p>
-    <%= label_tag :'説明' %>
-    <%= text_field_tag :detail, "", name: "detail" %>
-    </p>
-    <%= submit_tag "作成" %>
-</div>
+<% for x in 1..last_day.day do %>
+  <div id="add-<%= x %>" title="SoR Calendar - Create Schedule">
+    <h2>スケジュール追加画面</h2>
+    <%= form_tag({controller: :calendars, action: :registerSchedule}, {method: :post}) do %>
+      <%= hidden_field_tag "kbn-A#{x}", "add", name: "kbn" %>
+      <p>
+      <%= label_tag :'日付' %>
+      <%= date_field_tag "date-A#{x}", Date.parse("#{@year}-#{@month}-#{x}"), name: "date" %>
+      </p>
+      <p>
+      <%= label_tag :'タイトル' %>
+      <%= text_field_tag "title-A#{x}", "", name: "title" %>
+      </p>
+      <p>
+      <%= label_tag :'開始時刻' %>
+      <%= time_field_tag "started_at-A#{x}", "", name: "started_at" %>
+      </p>
+      <p>
+      <%= label_tag :'終了時刻' %>
+      <%= time_field_tag "ended_at-A#{x}", "", name: "ended_at" %>
+      </p>
+      <p>
+      <%= label_tag :'説明' %>
+      <%= text_field_tag "detail-A#{x}", "", name: "detail" %>
+      </p>
+      <%= submit_tag "決定" %>
+    <% end %>
+  </div>
+<% end %>
+
+<% for x in scheduleIdList do %>
+  <div id="edit-<%= x %>" title="SoR Calendar - Update Schedule">
+    <% editSchedule = scheduleIdHash[x.to_s.to_sym] %>
+    <h2>スケジュール編集画面</h2>
+    <%= form_tag({controller: :calendars, action: :registerSchedule}, {method: :post}) do %>
+      <%= hidden_field_tag "kbn-E#{x}", "edit", name: "kbn" %>
+      <%= hidden_field_tag "schedule_id-E#{x}", x, name: "schedule_id" %>
+      <p>
+      <%= label_tag :'日付' %>
+      <%= date_field_tag "date-E#{x}", editSchedule.date, name: "date" %>
+      </p>
+      <p>
+      <%= label_tag :'タイトル' %>
+      <%= text_field_tag "title-E#{x}", editSchedule.schedule_content.title, name: "title" %>
+      </p>
+      <p>
+      <%= label_tag :'開始時刻' %>
+      <%= time_field_tag "started_at-E#{x}", editSchedule.schedule_content.started_at, name: "started_at" %>
+      </p>
+      <p>
+      <%= label_tag :'終了時刻' %>
+      <%= time_field_tag "ended_at-E#{x}", editSchedule.schedule_content.ended_at, name: "ended_at" %>
+      </p>
+      <p>
+      <%= label_tag :'説明' %>
+      <%= text_field_tag "detail-E#{x}", editSchedule.schedule_content.detail, name: "detail" %>
+      </p>
+      <%= submit_tag "決定" %>
+    <% end %>
+  </div>
+<% end %>
+
+<% for x in scheduleIdList do %>
+  <div id="del-<%= x %>" title="SoR Calendar - Delete Schedule">
+    <% delSchedule = scheduleIdHash[x.to_s.to_sym] %>
+    <h2>スケジュール削除画面</h2>
+    <div>以下の予定を削除しますか？</div>
+    <p>タイトル: <%=delSchedule.schedule_content.title%></p>
+    <p>詳細: <%=delSchedule.schedule_content.detail%></p>
+    <%= form_tag({controller: :calendars, action: :registerSchedule}, {method: :post}) do %>
+      <%= hidden_field_tag "kbn-D#{x}", "delete", name: "kbn" %>
+      <%= hidden_field_tag "schedule_id-D#{x}", x, name: "schedule_id" %>
+      <%= submit_tag "削除" %>
+    <% end %>
+  </div>
+<% end %>
 
 <script language="JavaScript" type="text/javascript">
   <!--
@@ -155,13 +223,6 @@ session[:schedule_contents] = nil
     for ( var i = 1 ; i <= d[1] ; i++ ) {
       if ( i == d[0] ) {
         document.getElementById("date"+i).style.display = "";
-        var dd = document.querySelector("input[id='date']").value.split("-");
-        if ( i < 10 ) {
-          var moji_date = dd[0]+"-"+dd[1]+"-0"+i;
-        } else {
-          var moji_date = dd[0]+"-"+dd[1]+"-"+i;
-        }
-        document.querySelector("input[id='date']").value = moji_date;
       } else {
         document.getElementById("date"+i).style.display = "none";
       }
