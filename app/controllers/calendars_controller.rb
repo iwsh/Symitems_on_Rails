@@ -22,7 +22,7 @@ class CalendarsController < AccessSchedulesController
     @schedules = AccessSchedulesController.new.getSchedule(userId, @year, @month)
   end
 
-  def registerSchedule
+  def manipulateSchedule
     userId = session[:user]["id"]
     if params[:kbn] == "add"
       insertSchedule = Hash.new

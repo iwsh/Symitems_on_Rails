@@ -45,7 +45,6 @@ class AccessSchedulesController < ApplicationController
   end
 
   def insertSchedule(schedules)
-
     # transaction張りたい
     @scheduleContent = ScheduleContent.create(
       title: schedules[:title],

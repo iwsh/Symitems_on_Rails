@@ -11,8 +11,8 @@ class CalendarsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "should get registerSchedule" do
-    get calendars_registerSchedule_url
+  test "should get manipulateSchedule" do
+    get calendars_manipulateSchedule_url
     assert_response :success
   end
 

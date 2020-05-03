@@ -6,7 +6,7 @@ Rails.application.routes.draw do
 
   get 'calendar' => 'calendars#calendar'
   get 'calendar/:year/:month' => 'calendars#calendar'
-  post 'calendars/registerSchedule'
+  post 'calendars/manipulateSchedule'
   post 'access_schedules/deleteSchedule'
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end

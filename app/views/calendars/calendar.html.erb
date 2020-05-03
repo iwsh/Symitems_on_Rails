@@ -125,7 +125,7 @@ month = @month.to_i
 <% for x in 1..last_day.day do %>
   <div id="add-<%= x %>" title="SoR Calendar - Create Schedule">
     <h2>スケジュール追加画面</h2>
-    <%= form_tag({controller: :calendars, action: :registerSchedule}, {method: :post}) do %>
+    <%= form_tag({controller: :calendars, action: :manipulateSchedule}, {method: :post}) do %>
       <%= hidden_field_tag "kbn-A#{x}", "add", name: "kbn" %>
       <%= hidden_field_tag "ym-A#{x}", "#{@year}/#{@month}", name: "ym" %>
       <p>
@@ -157,7 +157,7 @@ month = @month.to_i
   <div id="edit-<%= x %>" title="SoR Calendar - Update Schedule">
     <% editSchedule = scheduleIdHash[x.to_s.to_sym] %>
     <h2>スケジュール編集画面</h2>
-    <%= form_tag({controller: :calendars, action: :registerSchedule}, {method: :post}) do %>
+    <%= form_tag({controller: :calendars, action: :manipulateSchedule}, {method: :post}) do %>
       <%= hidden_field_tag "kbn-E#{x}", "edit", name: "kbn" %>
       <%= hidden_field_tag "ym-E#{x}", "#{@year}/#{@month}", name: "ym" %>
       <%= hidden_field_tag "schedule_id-E#{x}", x, name: "schedule_id" %>
@@ -193,7 +193,7 @@ month = @month.to_i
     <div>以下の予定を削除しますか？</div>
     <p>タイトル: <%=delSchedule.schedule_content.title%></p>
     <p>詳細: <%=delSchedule.schedule_content.detail%></p>
-    <%= form_tag({controller: :calendars, action: :registerSchedule}, {method: :post}) do %>
+    <%= form_tag({controller: :calendars, action: :manipulateSchedule}, {method: :post}) do %>
       <%= hidden_field_tag "kbn-D#{x}", "delete", name: "kbn" %>
       <%= hidden_field_tag "ym-D#{x}", "#{@year}/#{@month}", name: "ym" %>
       <%= hidden_field_tag "schedule_id-D#{x}", x, name: "schedule_id" %>
