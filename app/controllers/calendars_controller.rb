@@ -22,14 +22,6 @@ class CalendarsController < AccessSchedulesController
     @schedules = AccessSchedulesController.new.getSchedule(userId, @year, @month)
   end
 
-  # def inputSchedule
-  #   if params[:date].present?
-  #     @date = params[:date]
-  #   elsif params[:schedule_id].present?
-  #     @schedule_id = params[:schedule_id]
-  #   end
-  # end
-
   def registerSchedule
     userId = session[:user]["id"]
     if params[:kbn] == "add"
@@ -57,10 +49,6 @@ class CalendarsController < AccessSchedulesController
       deleteSchedule[:id] = params[:schedule_id]
       AccessSchedulesController.new.deleteSchedule(deleteSchedule)
     end
-    redirect_to '/calendar'
+    redirect_to "/calendar/#{params[:ym]}"
   end
-
-  # def deleteConfirm
-  #   @schedule_id = params[:schedule_id]
-  # end
 end
