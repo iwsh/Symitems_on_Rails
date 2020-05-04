@@ -6,7 +6,7 @@ class AccessSchedulesController < ApplicationController
 
     Schedule.joins(:schedule_content)
     schedules = Hash.new
-    schedules = Schedule.where("date BETWEEN ? AND ?", dateFrom, dateTo).where(user_id: userId)
+    schedules = Schedule.where(date: dateFrom..dateTo, user_id: userId)
 
     displaySchedules = {}
     schedules.each{|schedule|
@@ -19,74 +19,73 @@ class AccessSchedulesController < ApplicationController
       return displaySchedules
   end
 
-  def updateSchedule(updateSchedule)
+  def updateSchedule(schedules)
     scheduleForId = Hash.new
-    scheduleForId = Schedule.where(id: updateSchedule[:id].to_i).where(user_id: updateSchedule[:user_id])
+    scheduleForId = Schedule.where(id: schedules[:id].to_i, user_id: schedules[:user_id])
     scheduleContentId = scheduleForId[0].content_id
 
     # transaction張りたい
     @scheduleContent = Hash.new
     @scheduleContent = ScheduleContent.find_by(id: scheduleContentId)
     @scheduleContent.update(
-      title: updateSchedule[:title],
-      started_at: updateSchedule[:started_at],
-      ended_at: updateSchedule[:ended_at],
-      detail: updateSchedule[:detail],
+      title: schedules[:title],
+      started_at: schedules[:started_at],
+      ended_at: schedules[:ended_at],
+      detail: schedules[:detail],
       updated_at: DateTime.now
     )
 
     @schedule = Hash.new
-    @schedule = Schedule.find_by(id: updateSchedule[:id])
+    @schedule = Schedule.find_by(id: schedules[:id])
     @schedule.update(
-      date: updateSchedule[:date],
+      date: schedules[:date],
       content_id: scheduleContentId,
       updated_at: DateTime.now
     )
   end
 
-  def insertSchedule(insertSchedule)
-
+  def insertSchedule(schedules)
     # transaction張りたい
     @scheduleContent = ScheduleContent.create(
-      title: insertSchedule[:title],
-      started_at: insertSchedule[:started_at],
-      ended_at: insertSchedule[:ended_at],
-      detail: insertSchedule[:detail],
+      title: schedules[:title],
+      started_at: schedules[:started_at],
+      ended_at: schedules[:ended_at],
+      detail: schedules[:detail],
       created_at: DateTime.now,
       updated_at: DateTime.now
     )
     @scheduleContent.save
 
-    insertedScheduleContent = ScheduleContent.last
+    insertedScheduleContentId = ScheduleContent.last.id
 
     @schedule = Schedule.create(
-      date: insertSchedule[:date],
-      user_id: insertSchedule[:user_id],
-      content_id: insertedScheduleContent.id,
+      date: schedules[:date],
+      user_id: schedules[:user_id],
+      content_id: insertedScheduleContentId,
       created_at: DateTime.now,
       updated_at: DateTime.now
     )
     @schedule.save
   end
 
-  def deleteSchedule
-    selectedDeleteScheduleId = params[:schedule_id]
+  def deleteSchedule(ids)
+    selectedDeleteScheduleId = ids[:id]
     isDeleteAll = 1
-    userId = session[:user]["id"]
+    userId = ids[:user_id]
 
     selectedDeleteSchedule = Hash.new
-    selectedDeleteSchedule = Schedule.where(id: selectedDeleteScheduleId).where(user_id: userId)
-    deleteScheduleContentId = selectedDeleteSchedule[0].content_id
+    selectedDeleteSchedule = Schedule.where(id: selectedDeleteScheduleId, user_id: userId)
+    selectedDeleteScheduleContentId = selectedDeleteSchedule[0].content_id
 
     if isDeleteAll == 1
-      @schedule = Schedule.where(content_id: deleteScheduleContentId)
+      @schedule = Schedule.where(content_id: selectedDeleteScheduleContentId)
       @schedule.delete_all
     else
-      @schedule = Schedule.find_by(id: deleteScheduleId)
+      @schedule = Schedule.find_by(id: selectedDeleteScheduleId)
       @schedule.delete
     end
 
-    @scheduleContent = ScheduleContent.find_by(id: deleteScheduleContentId)
+    @scheduleContent = ScheduleContent.find_by(id: selectedDeleteScheduleContentId)
     @scheduleContent.delete
   end
 end
