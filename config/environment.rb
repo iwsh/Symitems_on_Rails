@@ -3,3 +3,4 @@ require_relative 'application'
 
 # Initialize the Rails application.
 Rails.application.initialize!
+ENV['_PASSENGER_FORCE_HTTP_SESSION'] = "true"
