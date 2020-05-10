@@ -45,28 +45,37 @@ class AccessSchedulesController < ApplicationController
   end
 
   def insertSchedule(insertSchedule)
+    ActiveRecord::Base.transaction do # transaction張りたい
 
-    # transaction張りたい
-    @scheduleContent = ScheduleContent.create(
-      title: insertSchedule[:title],
-      started_at: insertSchedule[:started_at],
-      ended_at: insertSchedule[:ended_at],
-      detail: insertSchedule[:detail],
-      created_at: DateTime.now,
-      updated_at: DateTime.now
-    )
-    @scheduleContent.save
+      @scheduleContent = ScheduleContent.create(
+        title: insertSchedule[:title],
+        started_at: insertSchedule[:started_at],
+        ended_at: insertSchedule[:ended_at],
+        detail: insertSchedule[:detail],
+        created_at: DateTime.now,
+        updated_at: DateTime.now
+      ).valid?
+      if @scheduleContent == false
+        raise ActiveRecord::Rollback
+      end
 
-    insertedScheduleContent = ScheduleContent.last
+      insertedScheduleContent = ScheduleContent.last
 
-    @schedule = Schedule.create(
-      date: insertSchedule[:date],
-      user_id: insertSchedule[:user_id],
-      content_id: insertedScheduleContent.id,
-      created_at: DateTime.now,
-      updated_at: DateTime.now
-    )
-    @schedule.save
+      @schedule = Schedule.create(
+        date: insertSchedule[:date],
+        user_id: insertSchedule[:user_id],
+        content_id: insertedScheduleContent.id,
+        created_at: DateTime.now,
+        updated_at: DateTime.now
+      ).valid?
+      if @schedule == false
+        raise ActiveRecord::Rollback
+      end
+
+    rescue => e
+      # flash.now[:danger] = '開始/終了時刻を入力してください'
+      p "false"
+    end
   end
 
   def deleteSchedule
