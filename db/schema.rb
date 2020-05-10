@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_09_151858) do
+ActiveRecord::Schema.define(version: 2020_05_10_061124) do
 
   create_table "schedule_contents", force: :cascade do |t|
     t.string "title", limit: 50, null: false
@@ -33,12 +33,12 @@ ActiveRecord::Schema.define(version: 2020_05_09_151858) do
 
   create_table "users", force: :cascade do |t|
     t.string "name", limit: 20, null: false
+    t.string "password_digest", limit: 60, null: false
     t.string "email", limit: 100, null: false
     t.integer "fails_count", default: 0, null: false
     t.datetime "last_login_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "password_digest", limit: 60, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
