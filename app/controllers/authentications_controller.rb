@@ -24,7 +24,8 @@ class AuthenticationsController < ApplicationController
     puts user
 
     if user
-      if user.password == password
+      # if user.password == password
+      if user.authenticate(password)
         session[:user] = user
         redirect_to '/calendar'
       else

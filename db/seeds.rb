@@ -48,7 +48,9 @@ User.create!(
   [
     {
       name: '小黒 隼人',
+      # password_digest: BCrypt::Password.create('gerounnko'),
       password: 'gerounnko',
+      password_confirmation: 'gerounnko',
       email: 'gerounnko@gmail.com',
       last_login_at: DateTime.now,
       created_at: DateTime.now,
@@ -56,7 +58,9 @@ User.create!(
     },
     {
       name: '山黒 集太',
+      # password_digest: BCrypt::Password.create('chirichirige'),
       password: 'chirichirige',
+      password_confirmation: 'chirichirige',
       email: 'chirichirige@gmail.com',
       last_login_at: DateTime.now,
       created_at: DateTime.now,
