@@ -16,7 +16,7 @@ class AuthenticationsController < ApplicationController
     @request_auth[:password] = password
 
     unless validation(email, password)
-      flash.now[:danger] = 'Email/Passwordを入力してください'
+      flash.now[:alert] = 'Email/Passwordを入力してください。'
       return render :login
     end
 
@@ -24,16 +24,15 @@ class AuthenticationsController < ApplicationController
     puts user
 
     if user
-      # if user.password == password
       if user.authenticate(password)
         session[:user] = user
         redirect_to '/calendar'
       else
-        flash.now[:danger] = 'Email または Password が違います'
+        flash.now[:alert] = 'Email または Password が違います。'
         render :login
       end
     else
-      flash.now[:danger] = 'Email または Password が違います'
+      flash.now[:alert] = 'Email または Password が違います。'
       render :login
     end
   end
@@ -44,7 +43,7 @@ class AuthenticationsController < ApplicationController
       flag = false
     end
     if password == ''
-      # flash.now[:danger] = 'passwordを入力してください'
+      # flash.now[:alert] = 'passwordを入力してください'
       flag = false
     end
     flag

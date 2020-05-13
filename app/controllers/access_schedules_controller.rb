@@ -16,87 +16,109 @@ class AccessSchedulesController < ApplicationController
       end
       displaySchedules[day].push(schedule)
     }
-      return displaySchedules
+    return displaySchedules
   end
 
-  def updateSchedule(schedules)
-    scheduleForId = Hash.new
-    scheduleForId = Schedule.where(id: schedules[:id].to_i, user_id: schedules[:user_id])
-    scheduleContentId = scheduleForId[0].content_id
-
-    # transaction張りたい
-    @scheduleContent = Hash.new
-    @scheduleContent = ScheduleContent.find_by(id: scheduleContentId)
-    @scheduleContent.update(
-      title: schedules[:title],
-      started_at: schedules[:started_at],
-      ended_at: schedules[:ended_at],
-      detail: schedules[:detail],
-      updated_at: DateTime.now
-    )
-
-    @schedule = Hash.new
-    @schedule = Schedule.find_by(id: schedules[:id])
-    @schedule.update(
-      date: schedules[:date],
-      content_id: scheduleContentId,
-      updated_at: DateTime.now
-    )
-  end
-
-  def insertSchedule(schedules)
+  def updateSchedule(scheduleInfo)
     ActiveRecord::Base.transaction do # transaction張りたい
-    @scheduleContent = ScheduleContent.create(
-      title: schedules[:title],
-      started_at: schedules[:started_at],
-      ended_at: schedules[:ended_at],
-      detail: schedules[:detail],
-      created_at: DateTime.now,
-      updated_at: DateTime.now
-    ).valid?
-    if @scheduleContent == false
-      raise ActiveRecord::Rollback
-    end
-    # @scheduleContent.save
+      scheduleForId = Schedule.where(id: scheduleInfo[:id], user_id: scheduleInfo[:user_id])
+      scheduleContentId = scheduleForId[0].content_id
 
-    insertedScheduleContentId = ScheduleContent.last.id
+      scheduleContent = ScheduleContent.find_by(id: scheduleContentId)
+      scheduleContent.update!(
+        title: scheduleInfo[:title],
+        started_at: scheduleInfo[:started_at],
+        ended_at: scheduleInfo[:ended_at],
+        detail: scheduleInfo[:detail],
+        updated_at: DateTime.now
+      )
 
-    @schedule = Schedule.create(
-      date: schedules[:date],
-      user_id: schedules[:user_id],
-      content_id: insertedScheduleContentId,
-      created_at: DateTime.now,
-      updated_at: DateTime.now
-    ).valid?
-    if @schedule == false
-      raise ActiveRecord::Rollback
+      schedule = Schedule.find_by(id: scheduleInfo[:id])
+      schedule.update!(
+        date: scheduleInfo[:date],
+        content_id: scheduleContentId,
+        updated_at: DateTime.now
+      )
+
+    rescue ActiveRecord::RecordInvalid => e
+      errorMessage = nil
+      e.record.errors.messages.each_value do |messages|
+        messages.each do |message|
+          if errorMessage.nil?
+            errorMessage = message
+          end
+        end
+      end
+      return errorMessage
     end
-    # @schedule.save
+    return nil
+  end
+
+  def insertSchedule(scheduleInfo)
+    ActiveRecord::Base.transaction do # transaction張りたい
+      errorMessages = {}
+      insScheduleContent = ScheduleContent.create(
+        title: scheduleInfo[:title],
+        started_at: scheduleInfo[:started_at],
+        ended_at: scheduleInfo[:ended_at],
+        detail: scheduleInfo[:detail],
+        created_at: DateTime.now,
+        updated_at: DateTime.now
+      )
+      if insScheduleContent.valid? == false
+        errorMessages.deep_merge!(insScheduleContent.errors)
+        raise ActiveRecord::Rollback
+      end
+
+      insertedScheduleContentId = ScheduleContent.last.id
+      insSchedule = Schedule.create(
+        date: scheduleInfo[:date],
+        user_id: scheduleInfo[:user_id],
+        content_id: insertedScheduleContentId,
+        created_at: DateTime.now,
+        updated_at: DateTime.now
+      )
+      if insSchedule.valid? == false
+        errorMessages.deep_merge!(insSchedule.errors)
+        raise ActiveRecord::Rollback
+      end
 
     rescue => e
-      # flash.now[:danger] = '開始/終了時刻を入力してください'
-      p "false"
+      errorMessage = nil
+      errorMessages.each_value do |messages|
+        messages.each do |message|
+          if errorMessage.nil?
+            errorMessage = message
+          end
+        end
+      end
+      return errorMessage
     end
   end
 
   def deleteSchedule(ids)
-    selectedDeleteScheduleId = ids[:id]
-    isDeleteAll = 1
-    userId = ids[:user_id]
+    ActiveRecord::Base.transaction do # transaction張りたい
+      selectedDeleteScheduleId = ids[:id]
+      isDeleteAll = 1
+      userId = ids[:user_id]
 
-    selectedDeleteSchedule = Hash.new
-    selectedDeleteSchedule = Schedule.where(id: selectedDeleteScheduleId, user_id: userId)
-    selectedDeleteScheduleContentId = selectedDeleteSchedule[0].content_id
+      selectedDeleteSchedule = Schedule.where(id: selectedDeleteScheduleId, user_id: userId)
+      selectedDeleteScheduleContentId = selectedDeleteSchedule[0].content_id
 
-    if isDeleteAll == 1
-      @schedule = Schedule.where(content_id: selectedDeleteScheduleContentId)
-      @schedule.delete_all
-    else
-      @schedule = Schedule.find_by(id: selectedDeleteScheduleId)
-      @schedule.delete
+      if isDeleteAll == 1
+        @schedule = Schedule.where(content_id: selectedDeleteScheduleContentId)
+        @schedule.delete_all
+      else
+        @schedule = Schedule.find_by(id: selectedDeleteScheduleId)
+        @schedule.delete
+      end
+
+      @scheduleContent = ScheduleContent.find_by(id: selectedDeleteScheduleContentId)
+      @scheduleContent.delete
+    rescue => e
+      errorMessage = "予定を削除できませんでした。もう一度試してください。"
+      return errorMessage
     end
-
-    @scheduleContent = ScheduleContent.find_by(id: selectedDeleteScheduleContentId)
-    @scheduleContent.delete
+    return nil
   end
 end

@@ -1,9 +1,9 @@
 <h1>Authentications#login</h1>
 <p>Find me in app/views/authentications/login.html.erb</p>
-
-<%= form_tag({controller: :authentications, action: :checkUser}, {method: :post}) %>
+<%= form_tag({controller: :authentications, action: :checkUser}, {method: :post}) do %>
   <%= label_tag :email %>
-  <%= email_field_tag :title, @request_auth[:email], name: "email"%>　<br>
+  <%= email_field_tag :title, @request_auth[:email], name: "email"%> <br>
   <%= label_tag :password %>
-  <%= password_field_tag :title, @request_auth[:password], name: "password"%>　<br>
+  <%= password_field_tag :title, @request_auth[:password], name: "password"%> <br>
   <%= submit_tag "ログイン" %>
+<% end %>

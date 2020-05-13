@@ -1,4 +1,5 @@
 class Schedule < ApplicationRecord
-    belongs_to :schedule_content, optional: true, foreign_key: "content_id"
-    validates :date, :user_id, :content_id, presence: true
+  belongs_to :schedule_content, optional: true, foreign_key: "content_id"
+  validates :user_id, presence: true
+  validates :date, presence: { message: "日付は入力必須項目です。" }
 end
