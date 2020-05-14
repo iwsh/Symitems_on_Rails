@@ -20,20 +20,30 @@ class AuthenticationsController < ApplicationController
     end
 
     user = User.find_by(email: email)
+    # if fails_count >= 3
+    #   flash.now[:alert] = 'アカウントロックされています。解除するためには、管理者に問い合わせてください。'
+    #   render :login
+    # else
     if user
       if user.authenticate(password)
         session[:user] = user
         # 該当ユーザのfails_countを0に戻す
         redirect_to '/calendar'
       else
-        flash.now[:alert] = 'Email または Password が違います。'
         # 該当ユーザのfails_countをインクリメント
+        # if fails_count < 3
+        flash.now[:alert] = 'Email または Password が違います。'
         render :login
+        # else
+        #   flash.now[:alert] = 'アカウントがロックされました。解除するためには、管理者に問い合わせてください。'
+        #   render :login
+        # end
       end
     else
       flash.now[:alert] = 'Email または Password が違います。'
       render :login
     end
+    # end
   end
 
   def validation(email, password)
