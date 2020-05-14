@@ -57,7 +57,7 @@ class AuthenticationsController < ApplicationController
       end
     elsif password == ''
       flag = false
-      flash.now[:alert] = 'Passwordを入力してください。'
+      flash.now[:alert] = 'Password を入力してください。'
     end
     flag
   end
