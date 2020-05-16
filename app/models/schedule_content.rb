@@ -7,7 +7,7 @@ class ScheduleContent < ApplicationRecord
 
   def end_is_greater_than_start
     if started_at[0..1] > ended_at[0..1] || (started_at[0..1] == ended_at[0..1] && started_at[3..4] >= ended_at[3..4])
-      errors.add(:ended_at, "終了時刻 は 開始時刻 以降に設定する必要があります。")
+      errors.add(:ended_at, "終了時刻 は 開始時刻 より後の時刻を設定する必要があります。")
     end
   end
 end
