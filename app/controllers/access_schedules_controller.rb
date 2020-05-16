@@ -4,8 +4,7 @@ class AccessSchedulesController < ApplicationController
     dateFrom = format("#{displayYear}-%02d-01", displayMonth)
     dateTo = format("#{displayYear}-%02d-#{lastDay}", displayMonth)
 
-    Schedule.joins(:schedule_content)
-    schedules = Schedule.where(date: dateFrom..dateTo, user_id: userId)
+    schedules = Schedule.eager_load(:schedule_content).where(date: dateFrom..dateTo, user_id: userId).order(:date, :started_at, :ended_at, :id)
 
     displaySchedules = {}
     schedules.each{|schedule|
