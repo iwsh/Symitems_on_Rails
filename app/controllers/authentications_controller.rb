@@ -28,6 +28,7 @@ class AuthenticationsController < ApplicationController
       if user.authenticate(password)
         session[:user] = user
         # 該当ユーザのfails_countを0に戻す
+        user.update(last_login_at: DateTime.now)
         redirect_to '/calendar'
       else
         # 該当ユーザのfails_countをインクリメント

@@ -22,12 +22,8 @@ class CalendarsController < AccessSchedulesController
       schedule[:started_at] = params[:started_at]+":00"
       schedule[:ended_at] = params[:ended_at]+":00"
       schedule[:detail] = params[:detail]
-      ActiveRecord::Base.transaction do
-        errorMessage = AccessSchedulesController.new.insertSchedule(schedule) || []
-        if !(errorMessage.empty?)
-          raise StandardError
-        end
-      rescue => e
+      errorMessage = AccessSchedulesController.new.insertSchedule(schedule)
+      if !!(errorMessage)
         return redirect_to "/calendar/#{params[:ym]}", alert: errorMessage
       end
       message = "予定を追加しました。"
@@ -40,12 +36,8 @@ class CalendarsController < AccessSchedulesController
       schedule[:started_at] = params[:started_at][0..4]+":00"
       schedule[:ended_at] = params[:ended_at][0..4]+":00"
       schedule[:detail] = params[:detail]
-      ActiveRecord::Base.transaction do
-        errorMessage = AccessSchedulesController.new.updateSchedule(schedule) || []
-        if !(errorMessage.empty?)
-          raise StandardError
-        end
-      rescue => e
+      errorMessage = AccessSchedulesController.new.updateSchedule(schedule)
+      if !!(errorMessage)
         return redirect_to "/calendar/#{params[:ym]}", alert: errorMessage
       end
       message = "予定を編集しました。"
@@ -53,12 +45,8 @@ class CalendarsController < AccessSchedulesController
       ids = Hash.new
       ids[:user_id] = userId
       ids[:id] = params[:schedule_id]
-      ActiveRecord::Base.transaction do
-        errorMessage = AccessSchedulesController.new.deleteSchedule(ids) || []
-        if !(errorMessage.empty?)
-          raise StandardError
-        end
-      rescue => e
+      errorMessage = AccessSchedulesController.new.deleteSchedule(ids)
+      if !!(errorMessage)
         return redirect_to "/calendar/#{params[:ym]}", alert: errorMessage
       end
       message = "予定を削除しました。"
