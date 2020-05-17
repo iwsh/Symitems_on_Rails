@@ -1,7 +1,7 @@
 class AuthenticationsController < ApplicationController
   def login
     @request_auth = {}
-    @request_auth[:email] = 'email here'
+    @request_auth[:email] = ''
   end
 
   def logout
@@ -13,7 +13,7 @@ class AuthenticationsController < ApplicationController
     password = params[:password]
     @request_auth = {}
     @request_auth[:email] = email
-    @request_auth[:password] = password
+    @request_auth[:password] = ''
 
     unless validation(email, password)
       return render :login
