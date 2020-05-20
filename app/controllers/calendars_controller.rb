@@ -15,14 +15,28 @@ class CalendarsController < AccessSchedulesController
   def manipulateSchedule
     userId = session[:user]["id"]
     if params[:kbn] == "add"
+      day = params[:date].split('-')[2].to_i
+      p day
       schedule = Hash.new
       schedule[:user_id] = userId
       schedule[:date] = params[:date]
       schedule[:title] = params[:title]
-      schedule[:started_at] = params[:started_at]+":00"
-      schedule[:ended_at] = params[:ended_at]+":00"
       schedule[:detail] = params[:detail]
-      errorMessage = AccessSchedulesController.new.insertSchedule(schedule)
+      unless params["allday-A#{day}".to_sym].nil?
+        schedule[:started_at] = ""
+        schedule[:ended_at] = ""
+        errorMessage = AccessSchedulesController.new.insertSchedule(schedule)
+      else
+        if !(params[:started_at].empty? || params[:ended_at].empty?)
+          schedule[:started_at] = params[:started_at]+":00"
+          schedule[:ended_at] = params[:ended_at]+":00"
+          errorMessage = AccessSchedulesController.new.insertSchedule(schedule)
+        elsif params[:started_at].empty?
+          errorMessage = "開始時刻 は入力必須項目です。"
+        elsif params[:ended_at].empty?
+          errorMessage = "終了時刻 は入力必須項目です。"
+        end
+      end
       if !!(errorMessage)
         return redirect_to "/calendar/#{params[:ym]}", alert: errorMessage
       end
@@ -33,10 +47,22 @@ class CalendarsController < AccessSchedulesController
       schedule[:id] = params[:schedule_id]
       schedule[:date] = params[:date]
       schedule[:title] = params[:title]
-      schedule[:started_at] = params[:started_at][0..4]+":00"
-      schedule[:ended_at] = params[:ended_at][0..4]+":00"
       schedule[:detail] = params[:detail]
-      errorMessage = AccessSchedulesController.new.updateSchedule(schedule)
+      unless params["allday-E#{params[:schedule_id]}".to_sym].nil?
+        schedule[:started_at] = ""
+        schedule[:ended_at] = ""
+        errorMessage = AccessSchedulesController.new.updateSchedule(schedule)
+      else
+        if !(params[:started_at].empty? || params[:ended_at].empty?)
+          schedule[:started_at] = params[:started_at][0..4]+":00"
+          schedule[:ended_at] = params[:ended_at][0..4]+":00"
+          errorMessage = AccessSchedulesController.new.updateSchedule(schedule)
+        elsif params[:started_at].empty?
+          errorMessage = "開始時刻 は入力必須項目です。"
+        elsif params[:ended_at].empty?
+          errorMessage = "終了時刻 は入力必須項目です。"
+        end
+      end
       if !!(errorMessage)
         return redirect_to "/calendar/#{params[:ym]}", alert: errorMessage
       end
