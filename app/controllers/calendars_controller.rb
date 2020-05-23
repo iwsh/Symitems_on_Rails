@@ -16,7 +16,6 @@ class CalendarsController < AccessSchedulesController
     userId = session[:user]["id"]
     if params[:kbn] == "add"
       day = params[:date].split('-')[2].to_i
-      p day
       schedule = Hash.new
       schedule[:user_id] = userId
       schedule[:date] = params[:date]
@@ -32,8 +31,12 @@ class CalendarsController < AccessSchedulesController
           schedule[:ended_at] = params[:ended_at]+":00"
           errorMessage = AccessSchedulesController.new.insertSchedule(schedule)
         elsif params[:started_at].empty?
-          errorMessage = "開始時刻 は入力必須項目です。"
-        elsif params[:ended_at].empty?
+          if params[:ended_at].empty?
+            errorMessage = "開始時刻/終了時刻 は入力必須項目です。"
+          else
+            errorMessage = "開始時刻 は入力必須項目です。"
+          end
+        else
           errorMessage = "終了時刻 は入力必須項目です。"
         end
       end
@@ -58,8 +61,12 @@ class CalendarsController < AccessSchedulesController
           schedule[:ended_at] = params[:ended_at][0..4]+":00"
           errorMessage = AccessSchedulesController.new.updateSchedule(schedule)
         elsif params[:started_at].empty?
-          errorMessage = "開始時刻 は入力必須項目です。"
-        elsif params[:ended_at].empty?
+          if params[:ended_at].empty?
+            errorMessage = "開始時刻/終了時刻 は入力必須項目です。"
+          else
+            errorMessage = "開始時刻 は入力必須項目です。"
+          end
+        else
           errorMessage = "終了時刻 は入力必須項目です。"
         end
       end

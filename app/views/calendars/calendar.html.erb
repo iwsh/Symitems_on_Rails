@@ -154,7 +154,7 @@ next_month = "#{Date.new(year,month,1).next_month.year.to_s}/#{Date.new(year,mon
           <td>
             <%= label_tag :'日付' %><span style="vertical-align:super;color:red">*</span>
           </td><td>
-            <%= date_field_tag "date-A#{x}", Date.parse("#{@year}-#{@month}-#{x}"), name: "date", readonly: true %>
+            <%= date_field_tag "date-A#{x}", Date.parse("#{@year}-#{@month}-#{x}"), name: "date" %>
           </td>
         </tr><tr>
           <td>
