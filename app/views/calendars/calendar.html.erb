@@ -35,6 +35,17 @@ next_month = "#{Date.new(year,month,1).next_month.year.to_s}/#{Date.new(year,mon
       var num = $(this).attr('id').split("-")[2];
       $( "#"+kbn+"-"+num ).dialog( "open" );
     });
+
+    $( document ).on( "change", "[id^=allday]", function() {
+      var kbn_num = $(this).attr('id').split("-")[1];
+      if( $(this).prop('checked') ) {
+        $( "#started_at-"+kbn_num ).prop('disabled', true);
+        $( "#ended_at-"+kbn_num ).prop('disabled', true);
+      }else{
+        $( "#started_at-"+kbn_num ).prop('disabled', false);
+        $( "#ended_at-"+kbn_num ).prop('disabled', false);
+      }
+    } )
   } );
 </script>
 <table width="100%">
@@ -105,7 +116,11 @@ next_month = "#{Date.new(year,month,1).next_month.year.to_s}/#{Date.new(year,mon
                 <% scheduleList.each do |schedule| %>
                   <% scheduleIdList << schedule.id %>
                   <% scheduleIdHash[schedule.id.to_s.to_sym] = schedule %>
-                  <%= schedule.schedule_content.started_at %> ~ <%= schedule.schedule_content.ended_at %>：<%= schedule.schedule_content.title %><br>
+                  <% if schedule.schedule_content.started_at.empty? && schedule.schedule_content.ended_at.empty? %>
+                    終日：<%= schedule.schedule_content.title %><br>
+                  <% else %>
+                    <%= schedule.schedule_content.started_at %> ~ <%= schedule.schedule_content.ended_at %>：<%= schedule.schedule_content.title %><br>
+                  <% end %>
                   <%= schedule.schedule_content.detail %><br>
                   <button id="modal-edit-<%= schedule.id %>" style="display:inline-block;_display:inline;width:50px;height:25px;padding: 1px 6px;">編集</button>
                   <button id="modal-del-<%= schedule.id %>" style="display:inline-block;_display:inline;width:50px;height:25px;padding: 1px 6px;">削除</button><br><br>
@@ -134,27 +149,46 @@ next_month = "#{Date.new(year,month,1).next_month.year.to_s}/#{Date.new(year,mon
     <%= form_tag({controller: :calendars, action: :manipulateSchedule}, {method: :post}) do %>
       <%= hidden_field_tag "kbn-A#{x}", "add", name: "kbn" %>
       <%= hidden_field_tag "ym-A#{x}", "#{@year}/#{@month}", name: "ym" %>
-      <%= tag.p do %>
-        <%= label_tag :'日付' %>
-        <%= date_field_tag "date-A#{x}", Date.parse("#{@year}-#{@month}-#{x}"), name: "date" %>
-      <% end %>
-      <%= tag.p do %>
-        <%= label_tag :'タイトル' %>
-        <%= text_field_tag "title-A#{x}", "", name: "title" %>
-      <% end %>
-      <%= tag.p do %>
-        <%= label_tag :'開始時刻' %>
-        <%= time_field_tag "started_at-A#{x}", "", name: "started_at" %>
-      <% end %>
-      <%= tag.p do %>
-        <%= label_tag :'終了時刻' %>
-        <%= time_field_tag "ended_at-A#{x}", "", name: "ended_at" %>
-      <% end %>
-      <%= tag.p do %>
-        <%= label_tag :'説明' %>
-        <%= text_field_tag "detail-A#{x}", "", name: "detail" %>
-      <% end %>
-      <%= submit_tag "決定" %>
+      <table>
+        <tr>
+          <td>
+            <%= label_tag :'日付' %><span style="vertical-align:super;color:red">*</span>
+          </td><td>
+            <%= date_field_tag "date-A#{x}", Date.parse("#{@year}-#{@month}-#{x}"), name: "date" %>
+          </td>
+        </tr><tr>
+          <td>
+            <%= label_tag :'タイトル' %><span style="vertical-align:super;color:red">*</span>
+          </td><td>
+            <%= text_field_tag "title-A#{x}", "", name: "title", size: 25, maxlength: 50 %>
+          </td>
+        </tr><tr>
+          <td>
+            <%= label_tag :'開始時刻' %><span style="vertical-align:super;color:red">*</span>
+          </td><td>
+            <%= time_field_tag "started_at-A#{x}", "", name: "started_at" %>
+          </td>
+        </tr><tr>
+          <td>
+            <%= label_tag :'終了時刻' %><span style="vertical-align:super;color:red">*</span>
+          </td><td>
+            <%= time_field_tag "ended_at-A#{x}", "", name: "ended_at" %>　
+            <%= label_tag :'終日' %>
+            <%= check_box_tag "allday-A#{x}", true, false, {} %>
+          </td>
+        </tr><tr>
+          <td valign="baseline">
+            <%= label_tag :'説明' %>
+          </td><td>
+            <%= text_field_tag "detail-A#{x}", "", name: "detail", size: 25 %>
+          </td>
+        </tr><tr>
+          <td>
+          </td><td>
+            <%= submit_tag "決定" %>
+          </td>
+        </tr>
+      </table>
     <% end %>
   <% end %>
 <% end %>
@@ -163,31 +197,57 @@ next_month = "#{Date.new(year,month,1).next_month.year.to_s}/#{Date.new(year,mon
   <%= tag.div(id: "edit-#{x}", title: "SoR Calendar - Update Schedule") do %>
     <%= tag.h2 "スケジュール編集画面" %>
     <% editSchedule = scheduleIdHash[x.to_s.to_sym] %>
+    <%
+      if editSchedule.schedule_content.started_at.empty? && editSchedule.schedule_content.ended_at.empty?
+        allday = true
+      else
+        allday = false
+      end
+    %>
     <%= form_tag({controller: :calendars, action: :manipulateSchedule}, {method: :post}) do %>
       <%= hidden_field_tag "kbn-E#{x}", "edit", name: "kbn" %>
       <%= hidden_field_tag "ym-E#{x}", "#{@year}/#{@month}", name: "ym" %>
       <%= hidden_field_tag "schedule_id-E#{x}", x, name: "schedule_id" %>
-      <%= tag.p do %>
-        <%= label_tag :'日付' %>
-        <%= date_field_tag "date-E#{x}", editSchedule.date, name: "date" %>
-      <% end %>
-      <%= tag.p do %>
-        <%= label_tag :'タイトル' %>
-        <%= text_field_tag "title-E#{x}", editSchedule.schedule_content.title, name: "title" %>
-      <% end %>
-      <%= tag.p do %>
-        <%= label_tag :'開始時刻' %>
-        <%= time_field_tag "started_at-E#{x}", editSchedule.schedule_content.started_at, name: "started_at" %>
-      <% end %>
-      <%= tag.p do %>
-        <%= label_tag :'終了時刻' %>
-        <%= time_field_tag "ended_at-E#{x}", editSchedule.schedule_content.ended_at, name: "ended_at" %>
-      <% end %>
-      <%= tag.p do %>
-        <%= label_tag :'説明' %>
-        <%= text_field_tag "detail-E#{x}", editSchedule.schedule_content.detail, name: "detail" %>
-      <% end %>
-      <%= submit_tag "決定" %>
+      <table>
+        <tr>
+          <td>
+            <%= label_tag :'日付' %><span style="vertical-align:super;color:red">*</span>
+          </td><td>
+            <%= date_field_tag "date-E#{x}", editSchedule.date, name: "date" %>
+          </td>
+        </tr><tr>
+          <td>
+            <%= label_tag :'タイトル' %><span style="vertical-align:super;color:red">*</span>
+          </td><td>
+            <%= text_field_tag "title-E#{x}", editSchedule.schedule_content.title, name: "title", size: 25, maxlength: 50 %>
+          </td>
+        </tr><tr>
+          <td>
+            <%= label_tag :'開始時刻' %><span style="vertical-align:super;color:red">*</span>
+          </td><td>
+            <%= time_field_tag "started_at-E#{x}", editSchedule.schedule_content.started_at, name: "started_at", disabled: allday %>
+          </td>
+        </tr><tr>
+          <td>
+            <%= label_tag :'終了時刻' %><span style="vertical-align:super;color:red">*</span>
+          </td><td>
+            <%= time_field_tag "ended_at-E#{x}", editSchedule.schedule_content.ended_at, name: "ended_at", disabled: allday %>　
+            <%= label_tag :'終日' %>
+            <%= check_box_tag "allday-E#{x}", true, allday, {} %>
+          </td>
+        </tr><tr>
+          <td valign="baseline">
+            <%= label_tag :'説明' %>
+          </td><td>
+            <%= text_field_tag "detail-E#{x}", editSchedule.schedule_content.detail, name: "detail", size: 25 %>
+          </td>
+        </tr><tr>
+          <td>
+          </td><td>
+            <%= submit_tag "決定" %>
+          </td>
+        </tr>
+      </table>
     <% end %>
   <% end %>
 <% end %>
