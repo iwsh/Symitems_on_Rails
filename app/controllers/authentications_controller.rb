@@ -1,7 +1,7 @@
 class AuthenticationsController < ApplicationController
   def login
     @request_auth = {}
-    @request_auth[:email] = 'email here'
+    @request_auth[:email] = ''
   end
 
   def logout
@@ -13,27 +13,33 @@ class AuthenticationsController < ApplicationController
     password = params[:password]
     @request_auth = {}
     @request_auth[:email] = email
-    @request_auth[:password] = password
+    @request_auth[:password] = ''
 
     unless validation(email, password)
-      flash.now[:danger] = 'Email/Passwordを入力してください'
       return render :login
     end
 
     user = User.find_by(email: email)
-    puts user
-
     if user
-      # if user.password == password
-      if user.authenticate(password)
+      if user.fails_count >= 3
+        flash.now[:alert] = 'アカウントロックされています。解除するためには、管理者に問い合わせてください。'
+        render :login
+      elsif user.authenticate(password)
         session[:user] = user
+        user.update(fails_count: 0, last_login_at: DateTime.now, record_timestamps: false)
         redirect_to '/calendar'
       else
-        flash.now[:danger] = 'Email または Password が違います'
-        render :login
+        user.increment!(:fails_count)
+        if user.fails_count < 3
+          flash.now[:alert] = 'Email または Password が違います。'
+          render :login
+        else
+          flash.now[:alert] = 'アカウントがロックされました。解除するためには、管理者に問い合わせてください。'
+          render :login
+        end
       end
     else
-      flash.now[:danger] = 'Email または Password が違います'
+      flash.now[:alert] = 'Email または Password が違います。'
       render :login
     end
   end
@@ -42,10 +48,14 @@ class AuthenticationsController < ApplicationController
     flag = true
     if email == ''
       flag = false
-    end
-    if password == ''
-      # flash.now[:danger] = 'passwordを入力してください'
+      if password == ''
+        flash.now[:alert] = 'Email/Password を入力してください。'
+      else
+        flash.now[:alert] = 'Email を入力してください。'
+      end
+    elsif password == ''
       flag = false
+      flash.now[:alert] = 'Password を入力してください。'
     end
     flag
   end
