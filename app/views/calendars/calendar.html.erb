@@ -3,15 +3,55 @@
 <p>User: <%=session[:user]["name"]%></p>
 <%= link_to "logout", "/logout" %>
 <%
+require 'date'
 year = @year.to_i
 month = @month.to_i
-session[:schedules] = nil
-session[:schedule_contents] = nil
+prev_month = "#{Date.new(year,month,1).prev_month.year.to_s}/#{Date.new(year,month,1).prev_month.month.to_s}"
+next_month = "#{Date.new(year,month,1).next_month.year.to_s}/#{Date.new(year,month,1).next_month.month.to_s}"
 %>
+<script>
+  $( function() {
+    var add, edit, del, inputSchedule, modal
+    add = $( "[id^=add]" ).dialog({
+        autoOpen: false,
+        height: 400,
+        width: 800,
+        modal: true
+      });
+    edit = $( "[id^=edit]" ).dialog({
+        autoOpen: false,
+        height: 400,
+        width: 800,
+        modal: true
+      });
+    del = $( "[id^=del]" ).dialog({
+        autoOpen: false,
+        height: 400,
+        width: 800,
+        modal: true
+      });
+    modal = $( "[id^=modal]" ).button().on( "click", function() {
+      var kbn = $(this).attr('id').split("-")[1];
+      var num = $(this).attr('id').split("-")[2];
+      $( "#"+kbn+"-"+num ).dialog( "open" );
+    });
+
+    $( document ).on( "change", "[id^=allday]", function() {
+      var kbn_num = $(this).attr('id').split("-")[1];
+      if( $(this).prop('checked') ) {
+        $( "#started_at-"+kbn_num ).prop('disabled', true);
+        $( "#ended_at-"+kbn_num ).prop('disabled', true);
+      }else{
+        $( "#started_at-"+kbn_num ).prop('disabled', false);
+        $( "#ended_at-"+kbn_num ).prop('disabled', false);
+      }
+    } )
+  } );
+</script>
 <table width="100%">
   <tr><td width="60%" height="420">
     <table border width="100%" height="370">
-      <caption><h2><%= link_to "/calendar/#{@year}/#{@month-1}", {method: :get} do %><div style="width:0;height:0;border-top:solid 8px transparent;border-left:solid 8px transparent;border-bottom:solid 8px transparent;border-right:solid 8px #7a0;display:inline-block;_display:inline;"></div><% end %>　<%= year %>/<%= month %>　<%= link_to "/calendar/#{@year}/#{@month+1}", {method: :get} do %><div style="width:0;height:0;border-top:solid 8px transparent;border-right:solid 8px transparent;border-bottom:solid 8px transparent;border-left:solid 8px #7a0;display:inline-block;_display:inline;"></div><% end %></h2></caption>
+      <caption><h2><%= link_to "/calendar/#{prev_month}", {method: :get} do %><div style="width:0;height:0;border-top:solid 8px transparent;border-left:solid 8px transparent;border-bottom:solid 8px transparent;border-right:solid 8px #7a0;display:inline-block;_display:inline;"></div><% end %>　<%= year %>/<%= month %>　<%= link_to "/calendar/#{next_month}", {method: :get} do %><div style="width:0;height:0;border-top:solid 8px transparent;border-right:solid 8px transparent;border-bottom:solid 8px transparent;border-left:solid 8px #7a0;display:inline-block;_display:inline;"></div><% end %></h2></caption>
       <tr>
         <th width="14%" height="35" style="color:red;">Sun</th>
         <th width="14%" height="35" >Mon</th>
@@ -23,23 +63,26 @@ session[:schedule_contents] = nil
       </tr>
       <tr>
       <%
-        require 'date'
         first_day = Date.new(year,month,1)
         last_day = Date.new(year,month,-1)
         if first_day.wday != 0 then
           for x in 1..first_day.wday do
       %>
             <td height="60"></td>
-          <% end %>
-        <% end %>
+      <%
+          end
+        end
+      %>
       <%
         for d in 1..last_day.day do
           if first_day.wday == 0 && first_day.day != 1 then
       %>
             </tr><tr>
-          <% end %>
+      <%
+          end
+      %>
           <td height="60" valign="baseline">
-            <a href="#" id="<%= first_day.day %>/<%= last_day.day %>" onClick="cont(this);disp();return false;"><%= first_day.day %></a><br>
+            <a href="" id="<%= first_day.day %>/<%= last_day.day %>" onClick="cont(this);disp();return false;"><%= first_day.day %></a><br>
             <% cnt = 0 %>
             <% @schedules.each do |day, scheduleList| %>
               <% if day == first_day.day %>
@@ -61,28 +104,30 @@ session[:schedule_contents] = nil
     </table>
     </td><td width="40%" valign="baseline">
       <div id="area1" style="display:none;">
-        <% session[:schedules] = nil %>
-        <% session[:schedule_contents] = nil %>
-        <% schedules_hash = Hash.new %>
-        <% schedule_contents_hash = Hash.new %>
+        <% scheduleIdList = [] %>
+        <% scheduleIdHash = {} %>
         <% for x in 1..last_day.day do %>
           <div id="date<%= x %>" style="display:none;">
-            <h3><%= year %>/<%= month %>/<%= x %>の予定<!-- 本来はモーダル表示 --><%= button_to "追加", "/add/#{@year}-#{@month}-#{x}", {method: :get} %><!-- ここまで --></h3>
+            <h3 style="display:inline;"><%= year %>/<%= month %>/<%= x %>の予定
+            </h3>
+            <button id="modal-add-<%= x %>" style="width:50px;height:25px;padding: 1px 6px;">追加</button><br>
             <% @schedules.each do |day, scheduleList| %>
               <% if day == x %>
                 <% scheduleList.each do |schedule| %>
-                  <% schedules_hash[schedule.id.to_s.to_sym] = schedule %>
-                  <% schedule_contents_hash[schedule.id.to_s.to_sym] = schedule.schedule_content %>
-                  <%= schedule.schedule_content.started_at %> ~ <%= schedule.schedule_content.ended_at %>：<%= schedule.schedule_content.title %><br>
-                  <%= schedule.schedule_content.detail %>
-                  <%= link_to "編集", "/edit/#{schedule.id}", class: 'btn btn-default' %>
-                  <%= link_to "削除", "/deleteConfirm/#{schedule.id}", class: 'btn btn-default' %><br>
+                  <% scheduleIdList << schedule.id %>
+                  <% scheduleIdHash[schedule.id.to_s.to_sym] = schedule %>
+                  <% if schedule.schedule_content.started_at.empty? && schedule.schedule_content.ended_at.empty? %>
+                    終日：<%= schedule.schedule_content.title %><br>
+                  <% else %>
+                    <%= schedule.schedule_content.started_at %> ~ <%= schedule.schedule_content.ended_at %>：<%= schedule.schedule_content.title %><br>
+                  <% end %>
+                  <%= schedule.schedule_content.detail %><br>
+                  <button id="modal-edit-<%= schedule.id %>" style="display:inline-block;_display:inline;width:50px;height:25px;padding: 1px 6px;">編集</button>
+                  <button id="modal-del-<%= schedule.id %>" style="display:inline-block;_display:inline;width:50px;height:25px;padding: 1px 6px;">削除</button><br><br>
                 <% end %>
               <% end %>
             <% end %>
           </div>
-          <% session[:schedules] = schedules_hash %>
-          <% session[:schedule_contents] = schedule_contents_hash %>
         <% end %>
       </div>
     </td>
@@ -98,21 +143,146 @@ session[:schedule_contents] = nil
   </tr>
 </table>
 
+<% for x in 1..last_day.day do %>
+  <%= tag.div(id: "add-#{x}", title: "SoR Calendar - Create Schedule") do %>
+    <%= tag.h2 "スケジュール追加画面" %>
+    <%= form_tag({controller: :calendars, action: :manipulateSchedule}, {method: :post}) do %>
+      <%= hidden_field_tag "kbn-A#{x}", "add", name: "kbn" %>
+      <%= hidden_field_tag "ym-A#{x}", "#{@year}/#{@month}", name: "ym" %>
+      <table>
+        <tr>
+          <td>
+            <%= label_tag :'日付' %><span style="vertical-align:super;color:red">*</span>
+          </td><td>
+            <%= date_field_tag "date-A#{x}", Date.parse("#{@year}-#{@month}-#{x}"), name: "date" %>
+          </td>
+        </tr><tr>
+          <td>
+            <%= label_tag :'タイトル' %><span style="vertical-align:super;color:red">*</span>
+          </td><td>
+            <%= text_field_tag "title-A#{x}", "", name: "title", size: 25, maxlength: 50 %>
+          </td>
+        </tr><tr>
+          <td>
+            <%= label_tag :'開始時刻' %><span style="vertical-align:super;color:red">*</span>
+          </td><td>
+            <%= time_field_tag "started_at-A#{x}", "", name: "started_at" %>
+          </td>
+        </tr><tr>
+          <td>
+            <%= label_tag :'終了時刻' %><span style="vertical-align:super;color:red">*</span>
+          </td><td>
+            <%= time_field_tag "ended_at-A#{x}", "", name: "ended_at" %>　
+            <%= label_tag :'終日' %>
+            <%= check_box_tag "allday-A#{x}", true, false, {} %>
+          </td>
+        </tr><tr>
+          <td valign="baseline">
+            <%= label_tag :'説明' %>
+          </td><td>
+            <%= text_field_tag "detail-A#{x}", "", name: "detail", size: 25 %>
+          </td>
+        </tr><tr>
+          <td>
+          </td><td>
+            <%= submit_tag "決定" %>
+          </td>
+        </tr>
+      </table>
+    <% end %>
+  <% end %>
+<% end %>
+
+<% for x in scheduleIdList do %>
+  <%= tag.div(id: "edit-#{x}", title: "SoR Calendar - Update Schedule") do %>
+    <%= tag.h2 "スケジュール編集画面" %>
+    <% editSchedule = scheduleIdHash[x.to_s.to_sym] %>
+    <%
+      if editSchedule.schedule_content.started_at.empty? && editSchedule.schedule_content.ended_at.empty?
+        allday = true
+      else
+        allday = false
+      end
+    %>
+    <%= form_tag({controller: :calendars, action: :manipulateSchedule}, {method: :post}) do %>
+      <%= hidden_field_tag "kbn-E#{x}", "edit", name: "kbn" %>
+      <%= hidden_field_tag "ym-E#{x}", "#{@year}/#{@month}", name: "ym" %>
+      <%= hidden_field_tag "schedule_id-E#{x}", x, name: "schedule_id" %>
+      <table>
+        <tr>
+          <td>
+            <%= label_tag :'日付' %><span style="vertical-align:super;color:red">*</span>
+          </td><td>
+            <%= date_field_tag "date-E#{x}", editSchedule.date, name: "date" %>
+          </td>
+        </tr><tr>
+          <td>
+            <%= label_tag :'タイトル' %><span style="vertical-align:super;color:red">*</span>
+          </td><td>
+            <%= text_field_tag "title-E#{x}", editSchedule.schedule_content.title, name: "title", size: 25, maxlength: 50 %>
+          </td>
+        </tr><tr>
+          <td>
+            <%= label_tag :'開始時刻' %><span style="vertical-align:super;color:red">*</span>
+          </td><td>
+            <%= time_field_tag "started_at-E#{x}", editSchedule.schedule_content.started_at, name: "started_at", disabled: allday %>
+          </td>
+        </tr><tr>
+          <td>
+            <%= label_tag :'終了時刻' %><span style="vertical-align:super;color:red">*</span>
+          </td><td>
+            <%= time_field_tag "ended_at-E#{x}", editSchedule.schedule_content.ended_at, name: "ended_at", disabled: allday %>　
+            <%= label_tag :'終日' %>
+            <%= check_box_tag "allday-E#{x}", true, allday, {} %>
+          </td>
+        </tr><tr>
+          <td valign="baseline">
+            <%= label_tag :'説明' %>
+          </td><td>
+            <%= text_field_tag "detail-E#{x}", editSchedule.schedule_content.detail, name: "detail", size: 25 %>
+          </td>
+        </tr><tr>
+          <td>
+          </td><td>
+            <%= submit_tag "決定" %>
+          </td>
+        </tr>
+      </table>
+    <% end %>
+  <% end %>
+<% end %>
+
+<% for x in scheduleIdList do %>
+  <%= tag.div(id: "del-#{x}", title: "SoR Calendar - Delete Schedule") do %>
+    <%= tag.h2 "スケジュール削除画面" %>
+    <% delSchedule = scheduleIdHash[x.to_s.to_sym] %>
+    <%= tag.div "以下の予定を削除しますか？" %>
+    <%= tag.p "タイトル: #{delSchedule.schedule_content.title}" %>
+    <%= tag.p "詳細: #{delSchedule.schedule_content.detail}" %>
+    <%= form_tag({controller: :calendars, action: :manipulateSchedule}, {method: :post}) do %>
+      <%= hidden_field_tag "kbn-D#{x}", "delete", name: "kbn" %>
+      <%= hidden_field_tag "ym-D#{x}", "#{@year}/#{@month}", name: "ym" %>
+      <%= hidden_field_tag "schedule_id-D#{x}", x, name: "schedule_id" %>
+      <%= submit_tag "削除" %>
+    <% end %>
+  <% end %>
+<% end %>
+
 <script language="JavaScript" type="text/javascript">
-<!--
-var elem0_1 = document.getElementById("area1");
-function disp() {
-  elem0_1.style.display = "";
-}
-function cont(date) {
-  var d = date.id.split("/");
-  for ( var i = 1 ; i <= d[1] ; i++ ) {
-    if (i == d[0] ) {
-      document.getElementById("date"+i).style.display = "";
-    } else {
-      document.getElementById("date"+i).style.display = "none";
+  <!--
+  var elem0_1 = document.getElementById("area1");
+  function disp() {
+    elem0_1.style.display = "";
+  }
+  function cont(date) {
+    var d = date.id.split("/");
+    for ( var i = 1 ; i <= d[1] ; i++ ) {
+      if ( i == d[0] ) {
+        document.getElementById("date"+i).style.display = "";
+      } else {
+        document.getElementById("date"+i).style.display = "none";
+      }
     }
   }
-}
--->
+  -->
 </script>

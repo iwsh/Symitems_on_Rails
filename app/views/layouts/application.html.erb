@@ -7,13 +7,26 @@
 
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="//jqueryui.com/resources/demos/style.css">
   </head>
 
   <body>
+    <%= javascript_include_tag('https://code.jquery.com/jquery-1.12.4.js') %>
+    <%= javascript_include_tag('https://code.jquery.com/ui/1.12.1/jquery-ui.js') %>
     <div class="container">
+      <style>/*
       <% flash.each do |message_type, message| %>
         <div class="alert alert-<%= message_type %>"><%= message %></div>
       <% end %>
+      */</style>
+      <div class="notifications">
+        <% flash.each do |message_type, message| %>
+          <div class="<%= message_type %>"><%= message %></div>
+        <% end %>
+      </div>
       <%= yield %>
       <%= debug(params) if Rails.env.development? %>
     </div>

@@ -4,9 +4,7 @@ class AccessSchedulesController < ApplicationController
     dateFrom = format("#{displayYear}-%02d-01", displayMonth)
     dateTo = format("#{displayYear}-%02d-#{lastDay}", displayMonth)
 
-    Schedule.joins(:schedule_content)
-    schedules = Hash.new
-    schedules = Schedule.where("date BETWEEN ? AND ?", dateFrom, dateTo).where(user_id: userId)
+    schedules = Schedule.eager_load(:schedule_content).where(date: dateFrom..dateTo, user_id: userId).order(:date, :started_at, :ended_at, :id)
 
     displaySchedules = {}
     schedules.each{|schedule|
@@ -16,77 +14,104 @@ class AccessSchedulesController < ApplicationController
       end
       displaySchedules[day].push(schedule)
     }
-      return displaySchedules
+    return displaySchedules
   end
 
-  def updateSchedule(updateSchedule)
-    scheduleForId = Hash.new
-    scheduleForId = Schedule.where(id: updateSchedule[:id].to_i).where(user_id: updateSchedule[:user_id])
-    scheduleContentId = scheduleForId[0].content_id
+  def updateSchedule(scheduleInfo)
+    begin
+      ActiveRecord::Base.transaction do
+        scheduleForId = Schedule.where(id: scheduleInfo[:id], user_id: scheduleInfo[:user_id])
+        scheduleContentId = scheduleForId[0].content_id
 
-    # transaction張りたい
-    @scheduleContent = Hash.new
-    @scheduleContent = ScheduleContent.find_by(id: scheduleContentId)
-    @scheduleContent.update(
-      title: updateSchedule[:title],
-      started_at: updateSchedule[:started_at],
-      ended_at: updateSchedule[:ended_at],
-      detail: updateSchedule[:detail],
-      updated_at: DateTime.now
-    )
+        scheduleContent = ScheduleContent.find_by(id: scheduleContentId)
+        scheduleContent.update!(
+          title: scheduleInfo[:title],
+          started_at: scheduleInfo[:started_at],
+          ended_at: scheduleInfo[:ended_at],
+          detail: scheduleInfo[:detail],
+          updated_at: DateTime.now
+        )
 
-    @schedule = Hash.new
-    @schedule = Schedule.find_by(id: updateSchedule[:id])
-    @schedule.update(
-      date: updateSchedule[:date],
-      content_id: scheduleContentId,
-      updated_at: DateTime.now
-    )
-  end
-
-  def insertSchedule(insertSchedule)
-
-    # transaction張りたい
-    @scheduleContent = ScheduleContent.create(
-      title: insertSchedule[:title],
-      started_at: insertSchedule[:started_at],
-      ended_at: insertSchedule[:ended_at],
-      detail: insertSchedule[:detail],
-      created_at: DateTime.now,
-      updated_at: DateTime.now
-    )
-    @scheduleContent.save
-
-    insertedScheduleContent = ScheduleContent.last
-
-    @schedule = Schedule.create(
-      date: insertSchedule[:date],
-      user_id: insertSchedule[:user_id],
-      content_id: insertedScheduleContent.id,
-      created_at: DateTime.now,
-      updated_at: DateTime.now
-    )
-    @schedule.save
-  end
-
-  def deleteSchedule
-    selectedDeleteScheduleId = params[:schedule_id]
-    isDeleteAll = 1
-    userId = session[:user]["id"]
-
-    selectedDeleteSchedule = Hash.new
-    selectedDeleteSchedule = Schedule.where(id: selectedDeleteScheduleId).where(user_id: userId)
-    deleteScheduleContentId = selectedDeleteSchedule[0].content_id
-
-    if isDeleteAll == 1
-      @schedule = Schedule.where(content_id: deleteScheduleContentId)
-      @schedule.delete_all
-    else
-      @schedule = Schedule.find_by(id: deleteScheduleId)
-      @schedule.delete
+        schedule = Schedule.find_by(id: scheduleInfo[:id])
+        schedule.update!(
+          date: scheduleInfo[:date],
+          content_id: scheduleContentId,
+          updated_at: DateTime.now
+        )
+      end
+    rescue ActiveRecord::RecordInvalid => e
+      errorMessage = nil
+      e.record.errors.messages.each_value do |messages|
+        messages.each do |message|
+          if errorMessage.nil?
+            errorMessage = message
+          end
+        end
+      end
+      return errorMessage
     end
+    return nil
+  end
 
-    @scheduleContent = ScheduleContent.find_by(id: deleteScheduleContentId)
-    @scheduleContent.delete
+  def insertSchedule(scheduleInfo)
+    begin
+      ActiveRecord::Base.transaction do
+        ScheduleContent.create!(
+          title: scheduleInfo[:title],
+          started_at: scheduleInfo[:started_at],
+          ended_at: scheduleInfo[:ended_at],
+          detail: scheduleInfo[:detail],
+          created_at: DateTime.now,
+          updated_at: DateTime.now
+        )
+
+        Schedule.create!(
+          date: scheduleInfo[:date],
+          user_id: scheduleInfo[:user_id],
+          content_id: ScheduleContent.last.id,
+          created_at: DateTime.now,
+          updated_at: DateTime.now
+        )
+      end
+    rescue ActiveRecord::RecordInvalid => e
+      errorMessage = nil
+      e.record.errors.messages.each_value do |messages|
+        messages.each do |message|
+          if errorMessage.nil?
+            errorMessage = message
+          end
+        end
+      end
+      return errorMessage
+    end
+    return nil
+  end
+
+  def deleteSchedule(ids)
+    begin
+      ActiveRecord::Base.transaction do
+        selectedDeleteScheduleId = ids[:id]
+        isDeleteAll = 1
+        userId = ids[:user_id]
+
+        selectedDeleteSchedule = Schedule.where(id: selectedDeleteScheduleId, user_id: userId)
+        selectedDeleteScheduleContentId = selectedDeleteSchedule[0].content_id
+
+        if isDeleteAll == 1
+          @schedule = Schedule.where(content_id: selectedDeleteScheduleContentId)
+          @schedule.delete_all
+        else
+          @schedule = Schedule.find_by(id: selectedDeleteScheduleId)
+          @schedule.delete
+        end
+
+        @scheduleContent = ScheduleContent.find_by(id: selectedDeleteScheduleContentId)
+        @scheduleContent.delete
+      end
+    rescue
+      errorMessage = "予定を削除できませんでした。もう一度試してください。"
+      return errorMessage
+    end
+    return nil
   end
 end
